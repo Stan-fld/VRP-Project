@@ -5,9 +5,9 @@ import networkx as nx
 from generation.DataGeneration import DataGeneration
 
 if __name__ == '__main__':
-    data = DataGeneration(number_of_summit=20, number_of_vehicle=10, max_neighbour=18)
+    data = DataGeneration(number_of_summit=10, number_of_vehicle=10, max_neighbor=5)
     print(len(data.data_vehicles))
-    print(len(data.data_matrix))
+    #print(len(data.data_matrix))
 
     def display():
         M = np.array(data.data_matrix)
@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
         options = {
             'node_color' : 'yellow',
-            'node_size'  : 550,
+            'node_size'  : 100,
             'edge_color' : 'tab:grey',
             'with_labels': True
         }

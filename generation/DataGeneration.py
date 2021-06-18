@@ -1,6 +1,8 @@
 import random
 import pprint
 
+import numpy as np
+from sklearn.neighbors import kneighbors_graph
 from generation.Vehicle import Vehicle
 
 
@@ -16,7 +18,7 @@ class DataGeneration:
         # print(len(self.data_vehicles))
         # test only ––––––––––––––––––––––––––––––––––––––––––––
 
-    def is_graph_correct(self, max_neighbour):
+    def is_graph_correct(self, max_neighbor):
         print("new graph")
         for sommet in range(1, len(self.data_matrix) + 1):
             liste = self.data_matrix[sommet - 1]
@@ -30,30 +32,42 @@ class DataGeneration:
             ' '.join([str(v) for v in voisins]) + ")"  #SOLUTION
             print(message)
             # test only ––––––––––––––––––––––––––––––––––––––––––––
-            if len(voisins) < 2 or len(voisins) > max_neighbour:
+            if len(voisins) < 2 or len(voisins) > max_neighbor:
                 return False
         return True
 
-    def matrix_generator(self, summit):
-        graph = []
-        i = 0
-        for item in range(1, summit + 1):
-            line = [random.choice([1, 0]) for i in range(1, summit + 1)]
-            line[i] = 0
-            graph.append(line)
-            i += 1
+    def get_neighbors_of_summit(self, actual_summit, graph = None):
+        graph = self.data_matrix if graph is None else graph
+        liste = graph[actual_summit] | graph[:,actual_summit]
+        return [i for i, value in enumerate(liste) if liste[i]]
+
+    def matrix_generator(self, number_of_summit, max_neighbor):
+        graph = np.random.randint(1, size=(number_of_summit, number_of_summit))
+        for i in range(number_of_summit):
+
+            dif = int(max_neighbor-len(self.get_neighbors_of_summit(i, graph)))
+            print(dif)
+            if dif > 0:
+                for r in random.sample(range(0, number_of_summit), k=random.randint(1, dif)):
+                    while True:
+                        print(r)
+                        print(len(self.get_neighbors_of_summit(r, graph)))
+                        if len(self.get_neighbors_of_summit(r, graph)) < max_neighbor or i == r:
+                            graph[i][r] = 1
+                            graph[r][i] = 1
+                            break
+                        else:
+                            r = random.sample(range(0, number_of_summit), 1)[0]
         # test only ––––––––––––––––––––––––––––––––––––––––––––
-        pprint.pprint(graph)
+        print(graph)
         # test only ––––––––––––––––––––––––––––––––––––––––––––
         self.data_matrix = graph
 
-    def __init__(self, number_of_summit, number_of_vehicle, max_neighbour):
-        success = False
-        i = 0
-        while not success:
-            self.matrix_generator(number_of_summit)
-            success = self.is_graph_correct(max_neighbour)
-            i += 1
+    def __init__(self, number_of_summit, number_of_vehicle, max_neighbor):
+        # generate the matrix randomly and check for constrains
+        self.matrix_generator(number_of_summit, max_neighbor)
+        self.is_graph_correct(max_neighbor)
+        # generate the vehicles
         self.vehicle_generator(number_of_vehicle)
 
         # test only ––––––––––––––––––––––––––––––––––––––––––––
