@@ -8,10 +8,11 @@ from generation.DataGeneration import DataGeneration
 
 if __name__ == '__main__':
 
-    data = DataGeneration(number_of_summit=100, number_of_vehicle=10, max_neighbor=9)
+    data = DataGeneration(number_of_summit=10, number_of_vehicle=10, max_neighbor=6)
     #print(len(data.data_vehicles))
     # print(len(data.data_matrix))
-
+    #data.data_vehicles[2].deliver_object(0,4)
+    print(data.data_vehicles[2].stock[0])
     def display():
         M = np.array(data.data_matrix)
 
