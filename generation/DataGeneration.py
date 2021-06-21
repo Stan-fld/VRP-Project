@@ -72,11 +72,12 @@ class DataGeneration:
             'with_labels': True
         }
         nx.draw(G2, **options)
-        # Show the figure
-        plt.show()
         if save:
             # Save it
-            plt.savefig(f'../graphs/MAP_{str(uuid.uuid4())[:4]}.png', transparent=True)
+            plt.savefig(f'graphs/MAP_{str(uuid.uuid4())[:4]}.png')
+        else:
+            # Show the figure
+            plt.show()
 
     def __init__(self, number_of_summit, number_of_vehicle, max_neighbor):
         # Generate the warehouse id
