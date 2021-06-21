@@ -21,5 +21,8 @@ class Summit:
     def set_kind(self, kind):
         self.kind = kind
 
+    def toJSON(self):
+        return {"id": self.id, "available_time_slot": self.available_time_slot, "predefined_neighbors": self.predefined_neighbors, "kind": self.kind, "item_to_deliver": self.item_to_deliver}
+
     def __str__(self):
         return f"Sommet {self.id} de type {self.kind}, plage horaire : {self.available_time_slot[0]}h à {self.available_time_slot[1]}h"

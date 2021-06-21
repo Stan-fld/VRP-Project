@@ -25,6 +25,9 @@ class Vehicle:
         self.load()
         self.max_speed = random.randint(20, 100)
 
+    def toJSON(self):
+        return {"id": self.id, "kind": self.kind, "load": self.stock, "max_speed": self.max_speed}
+
     def deliver_object(self, kind, qtt):
         for k, v in self.stock:
             if v['kind'] == kind and v.qtt >= qtt:

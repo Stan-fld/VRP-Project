@@ -22,5 +22,8 @@ class Segment:
         self.origin = origin
         self.destination = destination
 
+    def toJSON(self):
+        return {"id": self.id, "speed_limit": self.speed_limit, "authorized_vehicle": self.authorized_vehicle, "price": self.price, "origin": self.origin, "destination": self.destination}
+
     def __str__(self):
         return f"Segement {self.id} du point {self.origin} vers {self.destination}, vitesse max {self.speed_limit}, cout {self.price}, vehicules authorisés {self.authorized_vehicle}"

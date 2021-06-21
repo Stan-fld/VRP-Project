@@ -79,9 +79,12 @@ class DataGeneration:
             # Show the figure
             plt.show()
 
+    def toJSON(self):
+        return {"warehouse": self.warehouse, "data_matrix": [[*x] for x in self.data_matrix], "data_segment": [[x.toJSON() if type(x) is Segment else "null" for x in z] for z in self.data_segment], "data_vehicles": [x.toJSON() for x in self.data_vehicles], "data_summit": [x.toJSON() for x in self.data_summit]}
+
     def __init__(self, number_of_summit, number_of_vehicle, max_neighbor):
         # Generate the warehouse id
-        self.warehouse = random.randint(0, number_of_summit)
+        self.warehouse = random.randint(0, number_of_summit-1)
 
         # Generate empty data_segment
         self.data_segment = [[None for j in range(number_of_summit)] for i in range(number_of_summit)]
