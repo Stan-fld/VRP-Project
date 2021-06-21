@@ -22,6 +22,9 @@ class Summit:
         self.kind = kind
 
     def toJSON(self):
+        """
+        serialize the object in json
+        """
         return {"id": self.id, "available_time_slot": self.available_time_slot, "predefined_neighbors": self.predefined_neighbors, "kind": self.kind, "item_to_deliver": self.item_to_deliver}
 
     def __str__(self):

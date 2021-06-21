@@ -1,3 +1,4 @@
+import json
 import unittest
 import uuid
 
@@ -27,6 +28,12 @@ class GenerationTest(unittest.TestCase):
         plt.hist(neighbors)
         plt.title('Number(s) of neighbor(s)')
         plt.savefig(f'../graphs/NBN_{str(uuid.uuid4())[:4]}.png', transparent=True)
+
+    def test_json_output(self):
+        jso = self.dt.toJSON()
+        print(jso)
+        success = True
+        self.assertTrue(success)
 
 
 

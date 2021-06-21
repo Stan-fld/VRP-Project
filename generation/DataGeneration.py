@@ -1,3 +1,4 @@
+import json
 import random
 import uuid
 
@@ -17,25 +18,25 @@ class DataGeneration:
     data_summit: [Summit] = []
     data_vehicles: [Vehicle] = []
 
-    def vehicle_generator(self, number_of_vehicle):
+    def vehicle_generator(self, number_of_vehicle, number_of_summit) -> None:
         # Generate X vehicle(s)
         for i in range(number_of_vehicle):
             # Create a vehicle
-            vh = Vehicle()
+            vh = Vehicle(number_of_summit)
             # Load the vehicle (predefined items)
             vh.load()
             # Store the vehicle in data_vehicle
             self.data_vehicles.append(vh)
 
-    def is_graph_correct(self, max_neighbor):  # todo stan ajoute ici
+    def is_graph_correct(self, max_neighbor) -> bool:  # todo stan ajoute ici
         pass
 
-    def get_neighbors_of_summit(self, actual_summit, graph=None):
+    def get_neighbors_of_summit(self, actual_summit, graph=None) -> [bool]:
         graph = self.data_matrix if graph is None else graph
         liste = graph[actual_summit] | graph[:, actual_summit]
         return [i for i, value in enumerate(liste) if liste[i]]
 
-    def matrix_generator(self, number_of_summit, max_neighbor):
+    def matrix_generator(self, number_of_summit, max_neighbor) -> None:
         rd = (np.random.randn(number_of_summit) * (max_neighbor / 4) + max_neighbor / 2)
         rd = [abs(round(x, 0)) if x >= 1 else 1 for x in rd]
         # Generate an empty matrix (only 0 in it), in order to populate it later
@@ -59,7 +60,7 @@ class DataGeneration:
                             r = random.sample(range(0, number_of_summit), 1)[0]
         self.data_matrix = graph
 
-    def display(self, save=False):
+    def display(self, save=False) -> None:
         # Convert the matrix array into an numpy matrix
         M = np.array(self.data_matrix)
         # Generate the figure
@@ -79,8 +80,11 @@ class DataGeneration:
             # Show the figure
             plt.show()
 
-    def toJSON(self):
-        return {"warehouse": self.warehouse, "data_matrix": [[*x] for x in self.data_matrix], "data_segment": [[x.toJSON() if type(x) is Segment else "null" for x in z] for z in self.data_segment], "data_vehicles": [x.toJSON() for x in self.data_vehicles], "data_summit": [x.toJSON() for x in self.data_summit]}
+    def toJSON(self) -> str:
+        """
+        serialize the object in json
+        """
+        return f'{{"warehouse": {self.warehouse}, "data_matrix": {[[*x] for x in self.data_matrix]}, "data_segment": {[[x.toJSON() if type(x) is Segment else "null" for x in z] for z in self.data_segment]}, "data_vehicles": {[x.toJSON() for x in self.data_vehicles]}, "data_summit": {[x.toJSON() for x in self.data_summit]} }})'
 
     def __init__(self, number_of_summit, number_of_vehicle, max_neighbor):
         # Generate the warehouse id
@@ -95,4 +99,4 @@ class DataGeneration:
         self.data_summit[self.warehouse].set_kind(1)
 
         # generate the vehicles
-        self.vehicle_generator(number_of_vehicle)
+        self.vehicle_generator(number_of_vehicle, number_of_summit)
