@@ -23,4 +23,5 @@ class Segment:
         self.destination = destination
 
     def __str__(self):
-        return f"Segement {self.id} du point {self.origin} vers {self.destination}, vitesse max {self.speed_limit}, cout {self.price}, vehicules authorisés {self.authorized_vehicle}"
+        return f"Segment {self.id} du point {self.origin} vers {self.destination}, vitesse max {self.speed_limit}, " \
+               f"cout {self.price}, véhicules autorisés {self.authorized_vehicle}"
