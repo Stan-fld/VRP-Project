@@ -26,9 +26,6 @@ class DataGeneration:
             vh.load()
             # Store the vehicle in data
             self.data_vehicles.append(vh)
-        # test only ––––––––––––––––––––––––––––––––––––––––––––
-        # print(len(self.data_vehicles))
-        # test only ––––––––––––––––––––––––––––––––––––––––––––
 
     def is_graph_correct(self, max_neighbor):
         print("new graph")
@@ -56,7 +53,6 @@ class DataGeneration:
         return [i for i, value in enumerate(liste) if liste[i]]
 
     def matrix_generator(self, number_of_summit, max_neighbor):
-
         rd = (np.random.randn(number_of_summit) * (max_neighbor / 4) + max_neighbor / 2)
         rd = [abs(round(x, 0)) if x >= 1 else 1 for x in rd]
         # Generate an empty matrix (only 0 in it), in order to populate it later
@@ -97,18 +93,21 @@ class DataGeneration:
 
         # generate the matrix randomly and check for constrains
         self.matrix_generator(number_of_summit, max_neighbor)
+        # Set the warehouse as is in teh data_summit list
         self.data_summit[self.warehouse].set_kind(1)
 
         # generate the vehicles
         self.vehicle_generator(number_of_vehicle)
-        print(self.data_vehicles[0].kind)
+
+        # test only ––––––––––––––––––––––––––––––––––––––––––––
+        '''
         for s in self.data_segment:
             for ss in s:
                 print(ss)
 
         for smt in self.data_summit:
             print(smt)
-        # test only ––––––––––––––––––––––––––––––––––––––––––––
+        '''
         # self.is_graph_correct(max_neighbor)
         # print(f"number of itteration to generate the graph {i}")
         # print(f"id of the {len(self.data_vehicles)} generated vehicles : ")
