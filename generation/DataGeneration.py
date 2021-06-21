@@ -1,13 +1,13 @@
 import random
-import pprint
+import uuid
 
+import networkx as nx
 import numpy as np
-from sklearn.neighbors import kneighbors_graph
+from matplotlib import pyplot as plt
 
 from generation.Segment import Segment
 from generation.Summit import Summit
 from generation.Vehicle import Vehicle
-from matplotlib import pyplot as plt
 
 
 class DataGeneration:
@@ -18,34 +18,17 @@ class DataGeneration:
     data_vehicles: [Vehicle] = []
 
     def vehicle_generator(self, number_of_vehicle):
-
+        # Generate X vehicle(s)
         for i in range(number_of_vehicle):
             # Create a vehicle
             vh = Vehicle()
             # Load the vehicle (predefined items)
             vh.load()
-            # Store the vehicle in data
+            # Store the vehicle in data_vehicle
             self.data_vehicles.append(vh)
 
-    def is_graph_correct(self, max_neighbor):
-        print("new graph")
-        neighbors = []
-        for sommet in range(1, len(self.data_matrix) + 1):
-            liste = self.data_matrix[sommet - 1]
-            voisins = [i for i, value in enumerate(liste) if liste[i]]
-            # test only ––––––––––––––––––––––––––––––––––––––––––––
-            # display the nb neighboor
-            neighbors.append(len(voisins))
-            print(len(voisins))
-            message = "Le sommet " + str(sommet - 1) + " est de degré " + str(len(voisins)) + " (voisins : "
-            message += \
-                ' '.join([str(v) for v in voisins]) + ")"  # SOLUTION
-            print(message)
-            # test only ––––––––––––––––––––––––––––––––––––––––––––
-
-        plt.hist(neighbors)
-        plt.title('neighbor')
-        plt.show()
+    def is_graph_correct(self, max_neighbor):  # todo stan ajoute ici
+        pass
 
     def get_neighbors_of_summit(self, actual_summit, graph=None):
         graph = self.data_matrix if graph is None else graph
@@ -60,7 +43,7 @@ class DataGeneration:
         for i in range(number_of_summit):
             # Create and store a summit object
             self.data_summit.append(Summit(rd[i]))
-            # Check the diffrence between the predefined amount of neighbor and the actual
+            # Check the difference between the predefined amount of neighbor and the actual
             dif = int(rd[i] - len(self.get_neighbors_of_summit(i, graph)))
             if dif > 0:
                 for r in random.sample(range(0, number_of_summit), k=random.randint(1, dif)):
@@ -74,19 +57,30 @@ class DataGeneration:
                             break
                         else:
                             r = random.sample(range(0, number_of_summit), 1)[0]
-        # test only ––––––––––––––––––––––––––––––––––––––––––––
-        '''
-        plt.hist(rd)
-        plt.title('rd')
-        plt.show()
-        print(graph)
-        '''
-        # test only ––––––––––––––––––––––––––––––––––––––––––––
         self.data_matrix = graph
+
+    def display(self, save=False):
+        # Convert the matrix array into an numpy matrix
+        M = np.array(self.data_matrix)
+        # Generate the figure
+        G2 = nx.DiGraph(M)
+        plt.figure()
+        options = {
+            'node_color': 'yellow',
+            'node_size': 100,
+            'edge_color': 'tab:grey',
+            'with_labels': True
+        }
+        nx.draw(G2, **options)
+        # Show the figure
+        plt.show()
+        if save:
+            # Save it
+            plt.savefig(f'../graphs/MAP_{str(uuid.uuid4())[:4]}.png', transparent=True)
 
     def __init__(self, number_of_summit, number_of_vehicle, max_neighbor):
         # Generate the warehouse id
-        self.warehouse = random.randint(0,number_of_summit)
+        self.warehouse = random.randint(0, number_of_summit)
 
         # Generate empty data_segment
         self.data_segment = [[None for j in range(number_of_summit)] for i in range(number_of_summit)]
@@ -98,19 +92,3 @@ class DataGeneration:
 
         # generate the vehicles
         self.vehicle_generator(number_of_vehicle)
-
-        # test only ––––––––––––––––––––––––––––––––––––––––––––
-        '''
-        for s in self.data_segment:
-            for ss in s:
-                print(ss)
-
-        for smt in self.data_summit:
-            print(smt)
-        '''
-        # self.is_graph_correct(max_neighbor)
-        # print(f"number of itteration to generate the graph {i}")
-        # print(f"id of the {len(self.data_vehicles)} generated vehicles : ")
-        # for v in self.data_vehicles:
-        #    pprint.pprint(v.id)
-        # test only ––––––––––––––––––––––––––––––––––––––––––––
