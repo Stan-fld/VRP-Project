@@ -53,7 +53,7 @@ def cycleEulerien(matrice):
 
 
 class RoadMap:
-    file_name = "fefault_name"
+    file_name = "default_name"
 
     def __init__(self, file_name):
         self.file_name = file_name

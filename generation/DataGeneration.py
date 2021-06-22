@@ -1,4 +1,3 @@
-import json
 import random
 import uuid
 
@@ -28,8 +27,44 @@ class DataGeneration:
             # Store the vehicle in data_vehicle
             self.data_vehicles.append(vh)
 
-    def is_graph_correct(self, max_neighbor) -> bool:  # todo stan ajoute ici
-        pass
+    # This function uses a path-width algorithm
+    # to know if there is a path between two summits.
+    # the graph is represented by the adjacency matrix
+
+    def exist_path(self, u, v) -> bool:
+        n = len(self.data_matrix) - 1  # number of summits in the graph
+        line = []
+        visits = [False] * n
+
+        # add the first summit to the queue
+        line.append(u)
+        while line:
+            # remove the top of the stack and tagged as visited
+            current = line.pop(0)
+            visits[current] = True
+
+            # visit adjacent summits
+            for i in range(n):
+                # if there is an edge between u and i and
+                # the summit i is not yet visited
+                if self.data_matrix[current][i] > 0 and not visits[i]:
+                    # add i to the queue tagged as visited
+                    line.append(i)
+                    visits[i] = True
+
+                # If summit i is the desired summit (i = v)
+                # then there is a path from u to i(v)
+                elif self.data_matrix[current][i] > 0 and i == v:
+                    return True
+        return False
+
+    def is_graph_correct(self):
+        n = len(self.data_matrix) - 1  # number of summits
+        for i in range(n):
+            for j in range(i + 1, n):
+                if not self.exist_path(i, j):
+                    return False
+        return True
 
     def get_neighbors_of_summit(self, actual_summit, graph=None) -> [bool]:
         graph = self.data_matrix if graph is None else graph
@@ -88,13 +123,19 @@ class DataGeneration:
 
     def __init__(self, number_of_summit, number_of_vehicle, max_neighbor):
         # Generate the warehouse id
-        self.warehouse = random.randint(0, number_of_summit-1)
+        self.warehouse = random.randint(0, number_of_summit - 1)
 
-        # Generate empty data_segment
-        self.data_segment = [[None for j in range(number_of_summit)] for i in range(number_of_summit)]
+        while True:
+            # Generate empty data_segment
+            self.data_segment = [[None for j in range(number_of_summit)] for i in range(number_of_summit)]
+            self.data_matrix = []
+            self.data_summit = []
+            # generate the matrix randomly and check for constrains
+            self.matrix_generator(number_of_summit, max_neighbor)
+            if self.is_graph_correct():
+                break
 
-        # generate the matrix randomly and check for constrains
-        self.matrix_generator(number_of_summit, max_neighbor)
+        print(self.data_matrix)
         # Set the warehouse as is in teh data_summit list
         self.data_summit[self.warehouse].set_kind(1)
 
