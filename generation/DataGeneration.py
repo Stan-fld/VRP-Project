@@ -68,7 +68,7 @@ class DataGeneration:
 
     def get_neighbors_of_summit(self, actual_summit, graph=None) -> [bool]:
         graph = self.data_matrix if graph is None else graph
-        liste = graph[actual_summit] | graph[:, actual_summit]
+        liste = graph[actual_summit]
         return [i for i, value in enumerate(liste) if liste[i]]
 
     def matrix_generator(self, number_of_summit, max_neighbor) -> None:
@@ -83,8 +83,9 @@ class DataGeneration:
             dif = int(rd[i] - len(self.get_neighbors_of_summit(i, graph)))
             if dif > 0:
                 for r in random.sample(range(0, number_of_summit), k=random.randint(1, dif)):
+                    z = 0
                     while True:
-                        if len(self.get_neighbors_of_summit(r, graph)) < rd[i] and i != r:
+                        if len(self.get_neighbors_of_summit(r, graph)) < rd[r] and i != r:
                             # Add a segment in data_segment and in the adjacency matrix
                             self.data_segment[i][r] = Segment(i, r)
                             self.data_segment[r][i] = Segment(r, i)
@@ -92,7 +93,12 @@ class DataGeneration:
                             graph[r][i] = 1
                             break
                         else:
+                            z += 1
+                            if z > 5:
+                                break
+
                             r = random.sample(range(0, number_of_summit), 1)[0]
+
         self.data_matrix = graph
 
     def display(self, save=False) -> None:
@@ -124,7 +130,7 @@ class DataGeneration:
     def __init__(self, number_of_summit, number_of_vehicle, max_neighbor):
         # Generate the warehouse id
         self.warehouse = random.randint(0, number_of_summit - 1)
-
+        y = 0
         while True:
             # Generate empty data_segment
             self.data_segment = [[None for j in range(number_of_summit)] for i in range(number_of_summit)]
@@ -134,8 +140,10 @@ class DataGeneration:
             self.matrix_generator(number_of_summit, max_neighbor)
             if self.is_graph_correct():
                 break
+            else:
+                y += 1
+        print(y) # todo stan optimise ici
 
-        print(self.data_matrix)
         # Set the warehouse as is in teh data_summit list
         self.data_summit[self.warehouse].set_kind(1)
 
