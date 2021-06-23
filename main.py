@@ -1,8 +1,12 @@
 import os
 from time import sleep
 
+from pymongo import database
+
+from database import DBConnection
 from generation.DataGeneration import DataGeneration
 from pdf.RoadMap import RoadMap
+
 clearConsole = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 if __name__ == '__main__':
     data = None
@@ -29,6 +33,7 @@ if __name__ == '__main__':
             quit(0)
         elif inp == "1":  # Generate + store
             data = DataGeneration(number_of_summit=10, number_of_vehicle=10, max_neighbor=5)
+            DBConnection.infos_collection.insert_one(data.toJSON())
             clearConsole()
         elif inp == "2":  # Load from DB
             clearConsole()
