@@ -3,6 +3,7 @@ from time import sleep
 
 from generation.DataGeneration import DataGeneration
 from pdf.RoadMap import RoadMap
+
 clearConsole = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 if __name__ == '__main__':
     data = None
@@ -40,4 +41,3 @@ if __name__ == '__main__':
                 radmap_instance.generate(data)
             else:
                 print("Les données ne sont pas chargées merci de les générer ou de les importer (1 ou 2)\n")
-

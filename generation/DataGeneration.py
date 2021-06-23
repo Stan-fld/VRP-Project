@@ -27,45 +27,6 @@ class DataGeneration:
             # Store the vehicle in data_vehicle
             self.data_vehicles.append(vh)
 
-    # This function uses a path-width algorithm
-    # to know if there is a path between two summits.
-    # the graph is represented by the adjacency matrix
-
-    def exist_path(self, u, v) -> bool:
-        n = len(self.data_matrix) - 1  # number of summits in the graph
-        line = []
-        visits = [False] * n
-
-        # add the first summit to the queue
-        line.append(u)
-        while line:
-            # remove the top of the stack and tagged as visited
-            current = line.pop(0)
-            visits[current] = True
-
-            # visit adjacent summits
-            for i in range(n):
-                # if there is an edge between u and i and
-                # the summit i is not yet visited
-                if self.data_matrix[current][i] > 0 and not visits[i]:
-                    # add i to the queue tagged as visited
-                    line.append(i)
-                    visits[i] = True
-
-                # If summit i is the desired summit (i = v)
-                # then there is a path from u to i(v)
-                elif self.data_matrix[current][i] > 0 and i == v:
-                    return True
-        return False
-
-    def is_graph_correct(self):
-        n = len(self.data_matrix) - 1  # number of summits
-        for i in range(n):
-            for j in range(i + 1, n):
-                if not self.exist_path(i, j):
-                    return False
-        return True
-
     def get_neighbors_of_summit(self, actual_summit, graph=None) -> [bool]:
         graph = self.data_matrix if graph is None else graph
         liste = graph[actual_summit]
@@ -85,7 +46,8 @@ class DataGeneration:
                 for r in random.sample(range(0, number_of_summit), k=random.randint(1, dif)):
                     z = 0
                     while True:
-                        if (len(self.get_neighbors_of_summit(r, graph)) < rd[r] and i != r) or (z > 5 and (rd[r] < max_neighbor or rd[i] < max_neighbor)):
+                        if (len(self.get_neighbors_of_summit(r, graph)) < rd[r] and i != r) or (
+                                z > 5 and (rd[r] < max_neighbor or rd[i] < max_neighbor)):
                             # Add a segment in data_segment and in the adjacency matrix
                             self.data_segment[i][r] = Segment(i, r)
                             self.data_segment[r][i] = Segment(r, i)
@@ -137,13 +99,21 @@ class DataGeneration:
             self.data_segment = [[None for j in range(number_of_summit)] for i in range(number_of_summit)]
             self.data_matrix = []
             self.data_summit = []
+
             # generate the matrix randomly and check for constrains
             self.matrix_generator(number_of_summit, max_neighbor)
-            if self.is_graph_correct():
+
+            # Convert the matrix array into an numpy matrix
+            M = np.array(self.data_matrix)
+
+            # Generate the figure
+            G2 = nx.Graph(M)
+
+            if nx.is_connected(G2):
                 break
             else:
                 y += 1
-        print(y) # todo stan optimise ici
+        print(y)  # todo stan optimise ici
 
         # Set the warehouse as is in teh data_summit list
         self.data_summit[self.warehouse].set_kind(1)
