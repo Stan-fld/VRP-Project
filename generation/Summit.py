@@ -7,7 +7,7 @@ class Summit:
     # Time slot where the client is available
     available_time_slot = []
     # predefined neighbors (normal distribution)
-    predefined_neighbors = 0
+    predefined_neighbors = []
     # address = 0
     # warehouse = 1
     kind = 0
@@ -16,7 +16,8 @@ class Summit:
     def __init__(self, predefined_neighbors):
         self.available_time_slot = [random.randint(2, 9), random.randint(13, 23)]
         self.id = str(uuid.uuid4())[:8]
-        self.predefined_neighbors = predefined_neighbors
+        self.neighbors = predefined_neighbors
+        self.kind = 0
 
     def set_kind(self, kind):
         self.kind = kind

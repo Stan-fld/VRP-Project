@@ -1,13 +1,18 @@
+import os
 import random
 import uuid
 
 import networkx as nx
 import numpy as np
+import progressbar
 from matplotlib import pyplot as plt
 
 from generation.Segment import Segment
 from generation.Summit import Summit
 from generation.Vehicle import Vehicle
+
+
+def clearConsole(): os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 
 
 class DataGeneration:
@@ -16,6 +21,7 @@ class DataGeneration:
     data_segment: [[Segment]] = []
     data_summit: [Summit] = []
     data_vehicles: [Vehicle] = []
+    bar = progressbar.ProgressBar(max_value=100)
 
     def vehicle_generator(self, number_of_vehicle, number_of_summit) -> None:
         # Generate X vehicle(s)
@@ -27,55 +33,36 @@ class DataGeneration:
             # Store the vehicle in data_vehicle
             self.data_vehicles.append(vh)
 
-    def get_neighbors_of_summit(self, actual_summit, graph=None) -> [bool]:
-        graph = self.data_matrix if graph is None else graph
-        liste = graph[actual_summit]
-        return [i for i, value in enumerate(liste) if liste[i]]
-
     def matrix_generator(self, number_of_summit, max_neighbor) -> None:
-        rd = (np.random.randn(number_of_summit) * (max_neighbor / 4) + max_neighbor / 2)
-        rd = [abs(round(x, 0)) if x >= 1 else 1 for x in rd]
-        # Generate an empty matrix (only 0 in it), in order to populate it later
-        graph = np.random.randint(1, size=(number_of_summit, number_of_summit))
+        graph = nx.watts_strogatz_graph(number_of_summit, max_neighbor, 1)
+        q = 0
+        p = 0
+        mat = nx.adj_matrix(graph)
+        for x, y in graph.edges():
+            self.bar.update(q * 50 / len(graph.edges()))
+            self.data_segment[x][y] = Segment(x, y)
+            q += 1
         for i in range(number_of_summit):
-            # Create and store a summit object
-            self.data_summit.append(Summit(rd[i]))
-            # Check the difference between the predefined amount of neighbor and the actual
-            dif = int(rd[i] - len(self.get_neighbors_of_summit(i, graph)))
-            if dif > 0:
-                for r in random.sample(range(0, number_of_summit), k=random.randint(1, dif)):
-                    z = 0
-                    while True:
-                        if (len(self.get_neighbors_of_summit(r, graph)) < rd[r] and i != r) or (
-                                z > 5 and (rd[r] < max_neighbor or rd[i] < max_neighbor)):
-                            # Add a segment in data_segment and in the adjacency matrix
-                            self.data_segment[i][r] = Segment(i, r)
-                            self.data_segment[r][i] = Segment(r, i)
-                            graph[i][r] = 1
-                            graph[r][i] = 1
-                            break
-                        else:
-                            z += 1
-                            if z > 10:
-                                break
-
-                            r = random.sample(range(0, number_of_summit), 1)[0]
-
-        self.data_matrix = graph
+            self.bar.update(50 + i * 50 / number_of_summit)
+            self.data_summit.append(Summit([k for k in graph[i].keys()]))
+        # Convert graph to 2nd array adjacency matrix
+        self.data_matrix = mat.toarray()
 
     def display(self, save=False) -> None:
         # Convert the matrix array into an numpy matrix
         M = np.array(self.data_matrix)
         # Generate the figure
-        G2 = nx.DiGraph(M)
+        G2 = nx.Graph(M)
         plt.figure()
-        options = {
-            'node_color': 'yellow',
-            'node_size': 100,
-            'edge_color': 'tab:grey',
-            'with_labels': True
-        }
-        nx.draw(G2, **options)
+        # Set node size by type
+        node_sizes = [3000 if x.kind == 1 else 1600 for x in self.data_summit]
+        # Set color map
+        cmap = ['darkorange' if x.kind == 1 else 'dodgerblue' for x in self.data_summit]
+        # Draw the graph and specify our characteristics
+        lbl = ['Dépot' if x.kind == 1 else f'Adresse \n{self.data_summit.index(x)}' for x in self.data_summit]
+        nx.draw(G2, with_labels=True, node_color=cmap,
+                node_size=node_sizes, font_size=8, font_weight="bold", width=0.75,
+                edgecolors='gray', labels={i: lbl[i] for i in range(len(lbl))})
         if save:
             # Save it
             plt.savefig(f'graphs/MAP_{str(uuid.uuid4())[:4]}.png')
@@ -91,6 +78,8 @@ class DataGeneration:
         return f'{{"warehouse": {self.warehouse}, "data_matrix": {[[*x] for x in self.data_matrix]}, "data_segment": {[[x.toJSON() if type(x) is Segment else "null" for x in z] for z in self.data_segment]}, "data_vehicles": {[x.toJSON() for x in self.data_vehicles]}, "data_summit": {[x.toJSON() for x in self.data_summit]} }})'
 
     def __init__(self, number_of_summit, number_of_vehicle, max_neighbor):
+        clearConsole()
+        self.bar.start()
         # Generate the warehouse id
         self.warehouse = random.randint(0, number_of_summit - 1)
         y = 0
@@ -107,16 +96,15 @@ class DataGeneration:
             M = np.array(self.data_matrix)
 
             # Generate the figure
-            G2 = nx.Graph(M)
-
-            if nx.is_connected(G2):
+            g = nx.Graph(M)
+            # if graph is connected the generation is considered good
+            if nx.is_connected(g):
                 break
-            else:
-                y += 1
-        print(y)  # todo stan optimise ici
 
         # Set the warehouse as is in teh data_summit list
         self.data_summit[self.warehouse].set_kind(1)
 
         # generate the vehicles
         self.vehicle_generator(number_of_vehicle, number_of_summit)
+        self.bar.finish()
+        print("Les données on été générées")

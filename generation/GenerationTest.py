@@ -31,7 +31,6 @@ class GenerationTest(unittest.TestCase):
 
     def test_json_output(self):
         jso = self.dt.toJSON()
-        print(jso)
         success = True
         self.assertTrue(success)
 

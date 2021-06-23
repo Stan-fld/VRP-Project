@@ -4,15 +4,17 @@ from time import sleep
 from generation.DataGeneration import DataGeneration
 from pdf.RoadMap import RoadMap
 
-clearConsole = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
+
+def clearConsole(): os.system('cls' if os.name in ('nt', 'dos') else 'clear')
+
+
 if __name__ == '__main__':
     data = None
-    '''for i in range(1):
-        data = DataGeneration(number_of_summit=10, number_of_vehicle=10, max_neighbor=5)
+    for i in range(0):
+        data = DataGeneration(number_of_summit=1000, number_of_vehicle=10, max_neighbor=5)
         data.display()
         # print(data.toJSON())
         # print(i)
-    '''
     while True:
 
         print("Que voulez vous faire ? ")
@@ -29,7 +31,8 @@ if __name__ == '__main__':
             sleep(3)
             quit(0)
         elif inp == "1":  # Generate + store
-            data = DataGeneration(number_of_summit=10, number_of_vehicle=10, max_neighbor=5)
+            data = DataGeneration(number_of_summit=1000, number_of_vehicle=10, max_neighbor=5)
+            data.display()
             clearConsole()
         elif inp == "2":  # Load from DB
             clearConsole()

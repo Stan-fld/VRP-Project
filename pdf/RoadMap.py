@@ -1,11 +1,9 @@
-import io
 import os
 import uuid
 
 import networkx as nx
 import numpy as np
 from matplotlib import pyplot as plt
-from reportlab.graphics import renderPDF
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 
@@ -16,7 +14,7 @@ def remove_img(fn):
     os.remove(f'{fn}.jpg')
 
 
-def matrix_to_img(matrix) -> str:
+def matrix_to_img(matrix, summit) -> str:
     M = np.array(matrix)
     # Generate the figure
     G2 = nx.DiGraph(M)
@@ -27,7 +25,15 @@ def matrix_to_img(matrix) -> str:
         'edge_color': 'tab:grey',
         'with_labels': True
     }
-    nx.draw(G2, **options)
+    # Set node size by type
+    node_sizes = [3000 if x.kind == 1 else 1500 for x in summit]
+    # Set color map
+    cmap = ['darkorange' if x.kind == 1 else 'dodgerblue' for x in summit]
+    # Draw the graph and specify our characteristics
+    lbl = ['Dépot' if x.kind == 1 else f'Adresse \n{summit.index(x)}' for x in summit]
+    nx.draw(G2, with_labels=True, node_color=cmap,
+            node_size=node_sizes, font_size=8, font_weight="bold", width=0.75,
+            edgecolors='gray', labels={i: lbl[i] for i in range(len(lbl))})
     fn = str(uuid.uuid4())[:6]
     plt.savefig(f'{fn}.jpg', format='jpg')
     plt.close()
@@ -65,7 +71,7 @@ class RoadMap:
 
         c.drawString(100, 800, "Feuille de route")
         c.drawString(100, 780, "graph de général")
-        fn = matrix_to_img(data.data_matrix)
+        fn = matrix_to_img(data.data_matrix, data.data_summit)
         c.drawImage(f'{fn}.jpg', 0, 760 - 4 * inch, height=4 * inch, preserveAspectRatio=True, mask='auto')
         remove_img(fn)
         offset = 740 - 4 * inch
@@ -93,12 +99,12 @@ class RoadMap:
             c.showPage()
             c.drawString(100, 800, f"Feuille de route pour la voiture {vh.id}")
             c.drawString(100, 780, "graph de route")
-            fn = matrix_to_img(vh.itinerary)
+            fn = matrix_to_img(vh.itinerary, data.data_summit)
             c.drawImage(f'{fn}.jpg', 0, 760 - 4 * inch, height=4 * inch, preserveAspectRatio=True, mask='auto')
             remove_img(fn)
             offset = 740 - 4 * inch
             cycle = cycleEulerien(vh.itinerary)
-            print(cycle)
+            # print(cycle)
             for i in cycle:
                 smt = data.data_summit[i-1]
                 # todo print the intems to deliver ...
