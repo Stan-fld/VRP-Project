@@ -30,6 +30,7 @@ def matrix_to_img(matrix) -> str:
     nx.draw(G2, **options)
     fn = str(uuid.uuid4())[:6]
     plt.savefig(f'{fn}.jpg', format='jpg')
+    plt.close()
     return fn
 
 

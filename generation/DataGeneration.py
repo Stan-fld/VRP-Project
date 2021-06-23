@@ -85,7 +85,7 @@ class DataGeneration:
                 for r in random.sample(range(0, number_of_summit), k=random.randint(1, dif)):
                     z = 0
                     while True:
-                        if len(self.get_neighbors_of_summit(r, graph)) < rd[r] and i != r:
+                        if (len(self.get_neighbors_of_summit(r, graph)) < rd[r] and i != r) or (z > 5 and (rd[r] < max_neighbor or rd[i] < max_neighbor)):
                             # Add a segment in data_segment and in the adjacency matrix
                             self.data_segment[i][r] = Segment(i, r)
                             self.data_segment[r][i] = Segment(r, i)
@@ -94,7 +94,7 @@ class DataGeneration:
                             break
                         else:
                             z += 1
-                            if z > 5:
+                            if z > 10:
                                 break
 
                             r = random.sample(range(0, number_of_summit), 1)[0]
@@ -120,6 +120,7 @@ class DataGeneration:
         else:
             # Show the figure
             plt.show()
+        plt.close()
 
     def toJSON(self) -> str:
         """
