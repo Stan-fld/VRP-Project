@@ -1,9 +1,7 @@
 import os
 from time import sleep
 
-from pymongo import database
-
-from database import DBConnection
+from database import DBConnection as db
 from generation.DataGeneration import DataGeneration
 from pdf.RoadMap import RoadMap
 
@@ -35,7 +33,8 @@ if __name__ == '__main__':
             quit(0)
         elif inp == "1":  # Generate + store
             data = DataGeneration(number_of_summit=10, number_of_vehicle=10, max_neighbor=5)
-            DBConnection.infos_collection.insert_one(data.toJSON())
+            db.infos_collection.delete_many({})  # delete old data
+            db.infos_collection.insert_one(data.toJSON())  # add new data
             data.display()
             clearConsole()
         elif inp == "2":  # Load from DB
