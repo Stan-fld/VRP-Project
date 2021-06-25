@@ -36,11 +36,11 @@ if __name__ == '__main__':
         elif inp == "1":  # Generate + store
             data = DataGeneration(number_of_summit=10, number_of_vehicle=10, max_neighbor=5)
             DBConnection.infos_collection.insert_one(data.toJSON())
-            data = DataGeneration(number_of_summit=1000, number_of_vehicle=10, max_neighbor=5)
             data.display()
             clearConsole()
         elif inp == "2":  # Load from DB
             clearConsole()
+            data.pf.do(data)
 
         elif inp == "3":  # Pathfinding + RoadMap
             if data is not None:

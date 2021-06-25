@@ -22,7 +22,7 @@ class Segment:
         self.speed_limit = random.randint(20, 100)
         self.id = str(uuid.uuid4())[:8]
         self.authorized_vehicle = random.sample(range(0, 3), k=random.randint(1, 3))
-        self.price = random.randint(0, 3)
+        self.price = random.randint(0, 10)
         self.origin = origin
         self.destination = destination
         self.trafic = [random.randint(0, 50)/100 for x in range(23)]

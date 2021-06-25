@@ -11,16 +11,17 @@ class Summit:
     # address = 0
     # warehouse = 1
     kind = 0
-    item_to_deliver = [] # Todo add generation here
+    item_to_deliver = {}
 
-    def __init__(self, predefined_neighbors):
+    def __init__(self, predefined_neighbors, id):
         self.available_time_slot = [random.randint(2, 9), random.randint(13, 23)]
-        self.id = str(uuid.uuid4())[:8]
+        self.id = id
         self.neighbors = predefined_neighbors
         self.kind = 0
+        self.item_to_deliver = {"kind": random.randint(0, 3), "qtt": random.randint(0, 5)}
 
-    def set_kind(self, kind):
-        self.kind = kind
+    def set_warehouse(self):
+        self.kind = 1
 
     def toJSON(self):
         """

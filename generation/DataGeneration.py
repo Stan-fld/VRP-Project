@@ -10,6 +10,7 @@ from matplotlib import pyplot as plt
 from generation.Segment import Segment
 from generation.Summit import Summit
 from generation.Vehicle import Vehicle
+from pathfinding.PathFinding import PathFinding
 
 
 def clearConsole(): os.system('cls' if os.name in ('nt', 'dos') else 'clear')
@@ -22,6 +23,7 @@ class DataGeneration:
     data_summit: [Summit] = []
     data_vehicles: [Vehicle] = []
     bar = progressbar.ProgressBar(max_value=100)
+    pf = PathFinding(0)
 
     def vehicle_generator(self, number_of_vehicle, number_of_summit) -> None:
         # Generate X vehicle(s)
@@ -36,7 +38,6 @@ class DataGeneration:
     def matrix_generator(self, number_of_summit, max_neighbor) -> None:
         graph = nx.watts_strogatz_graph(number_of_summit, max_neighbor, 1)
         q = 0
-        p = 0
         mat = nx.adj_matrix(graph)
         for x, y in graph.edges():
             self.bar.update(q * 50 / len(graph.edges()))
@@ -44,7 +45,7 @@ class DataGeneration:
             q += 1
         for i in range(number_of_summit):
             self.bar.update(50 + i * 50 / number_of_summit)
-            self.data_summit.append(Summit([k for k in graph[i].keys()]))
+            self.data_summit.append(Summit([k for k in graph[i].keys()], i))
         # Convert graph to 2nd array adjacency matrix
         self.data_matrix = mat.toarray()
 
@@ -52,7 +53,7 @@ class DataGeneration:
         # Convert the matrix array into an numpy matrix
         M = np.array(self.data_matrix)
         # Generate the figure
-        G2 = nx.Graph(M)
+        G2 = nx.DiGraph(M)
         plt.figure()
         # Set node size by type
         node_sizes = [3000 if x.kind == 1 else 1600 for x in self.data_summit]
@@ -79,6 +80,7 @@ class DataGeneration:
 
     def __init__(self, number_of_summit, number_of_vehicle, max_neighbor):
         clearConsole()
+        self.df = PathFinding(number_of_summit)
         self.bar.start()
         # Generate the warehouse id
         self.warehouse = random.randint(0, number_of_summit - 1)
@@ -96,15 +98,31 @@ class DataGeneration:
             M = np.array(self.data_matrix)
 
             # Generate the figure
-            g = nx.Graph(M)
+            g = nx.DiGraph(M)
             # if graph is connected the generation is considered good
-            if nx.is_connected(g):
+            print(nx.is_strongly_connected(self.to_di_graph()))
+            print("_____")
+            print(nx.is_strongly_connected(g))
+            if nx.is_strongly_connected(g):
                 break
-
+        #
+        #self.data_matrix = [[z*random.randint(0, 10) for z in x]for x in self.data_matrix]
         # Set the warehouse as is in teh data_summit list
-        self.data_summit[self.warehouse].set_kind(1)
+        self.data_summit[self.warehouse].set_warehouse()
 
         # generate the vehicles
         self.vehicle_generator(number_of_vehicle, number_of_summit)
         self.bar.finish()
         print("Les données on été générées")
+
+    def to_di_graph(self):
+        # Convert the matrix array into an numpy matrix
+        M = np.array(self.data_matrix)
+        # Generate the figure
+        return nx.DiGraph(M)
+
+    def to_graph(self):
+        # Convert the matrix array into an numpy matrix
+        M = np.array(self.data_matrix)
+        # Generate the figure
+        return nx.Graph(M)
