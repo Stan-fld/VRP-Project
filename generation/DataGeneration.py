@@ -71,11 +71,11 @@ class DataGeneration:
             plt.show()
         plt.close()
 
-    def toJSON(self) -> str:
+    def toJSON(self):
         """
         serialize the object in json
         """
-        return f'{{"warehouse": {self.warehouse}, "data_matrix": {[[*x] for x in self.data_matrix]}, "data_segment": {[[x.toJSON() if type(x) is Segment else "null" for x in z] for z in self.data_segment]}, "data_vehicles": {[x.toJSON() for x in self.data_vehicles]}, "data_summit": {[x.toJSON() for x in self.data_summit]} }})'
+        return {"warehouse": self.warehouse, "data_matrix": [[int(y) for y in x] for x in self.data_matrix], "data_segment": [[x.toJSON() if type(x) is Segment else "null" for x in z] for z in self.data_segment], "data_vehicles": [x.toJSON() for x in self.data_vehicles], "data_summit": [x.toJSON() for x in self.data_summit]}
 
     def __init__(self, number_of_summit, number_of_vehicle, max_neighbor):
         clearConsole()
