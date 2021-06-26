@@ -14,6 +14,13 @@ def remove_img(fn):
     os.remove(f'{fn}.jpg')
 
 
+def path_to_adjm(p:[int]):
+    g = nx.DiGraph()
+
+    for i, sid in enumerate(p):
+        g.add_edge(sid, p[i+1])
+
+
 def matrix_to_img(matrix, summit) -> str:
     M = np.array(matrix)
     # Generate the figure
@@ -104,7 +111,6 @@ class RoadMap:
             remove_img(fn)
             offset = 740 - 4 * inch
             cycle = cycleEulerien(vh.itinerary)
-            # print(cycle)
             for i in cycle:
                 smt = data.data_summit[i-1]
                 # todo print the intems to deliver ...

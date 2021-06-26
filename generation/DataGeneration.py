@@ -24,16 +24,24 @@ class DataGeneration:
     data_vehicles: [Vehicle] = []
     bar = progressbar.ProgressBar(max_value=100)
     pf = PathFinding(0)
+    number_of_kind_of_item = 0
 
     def vehicle_generator(self, number_of_vehicle, number_of_summit) -> None:
-        # Generate X vehicle(s)
-        for i in range(number_of_vehicle):
+        def gv (kind):
             # Create a vehicle
-            vh = Vehicle(number_of_summit)
+            vh = Vehicle(kind)
             # Load the vehicle (predefined items)
             vh.load()
             # Store the vehicle in data_vehicle
             self.data_vehicles.append(vh)
+        for i in range(self.number_of_kind_of_item):
+            gv(i)
+        # Generate X vehicle(s)
+        for i in range(number_of_vehicle-self.number_of_kind_of_item):
+            gv(random.randint(0, 3))
+
+
+
 
     def matrix_generator(self, number_of_summit, max_neighbor) -> None:
         graph = nx.watts_strogatz_graph(number_of_summit, max_neighbor, 1)
@@ -60,7 +68,7 @@ class DataGeneration:
         # Set color map
         cmap = ['darkorange' if x.kind == 1 else 'dodgerblue' for x in self.data_summit]
         # Draw the graph and specify our characteristics
-        lbl = ['Dépot' if x.kind == 1 else f'Adresse \n{self.data_summit.index(x)}' for x in self.data_summit]
+        lbl = [f'Dépot \ntype: {self.warehouse.index(x.id)}' if x.kind == 1 else f'Adresse \n{self.data_summit.index(x)}' for x in self.data_summit]
         nx.draw(G2, with_labels=True, node_color=cmap,
                 node_size=node_sizes, font_size=8, font_weight="bold", width=0.75,
                 edgecolors='gray', labels={i: lbl[i] for i in range(len(lbl))})
@@ -78,12 +86,13 @@ class DataGeneration:
         """
         return {"warehouse": self.warehouse, "data_matrix": [[int(y) for y in x] for x in self.data_matrix], "data_segment": [[x.toJSON() if type(x) is Segment else "null" for x in z] for z in self.data_segment], "data_vehicles": [x.toJSON() for x in self.data_vehicles], "data_summit": [x.toJSON() for x in self.data_summit]}
 
-    def __init__(self, number_of_summit, number_of_vehicle, max_neighbor):
+    def __init__(self, number_of_summit, number_of_vehicle, max_neighbor, number_of_kind_of_item):
         clearConsole()
         self.df = PathFinding(number_of_summit)
         self.bar.start()
+        self.number_of_kind_of_item = number_of_kind_of_item
         # Generate the warehouse id
-        self.warehouse = random.randint(0, number_of_summit - 1)
+        self.warehouse = [random.randint(0, number_of_summit - 1) for x in range(self.number_of_kind_of_item)]
         y = 0
         while True:
             # Generate empty data_segment
@@ -100,15 +109,13 @@ class DataGeneration:
             # Generate the figure
             g = nx.DiGraph(M)
             # if graph is connected the generation is considered good
-            print(nx.is_strongly_connected(self.to_di_graph()))
-            print("_____")
-            print(nx.is_strongly_connected(g))
             if nx.is_strongly_connected(g):
                 break
         #
         #self.data_matrix = [[z*random.randint(0, 10) for z in x]for x in self.data_matrix]
         # Set the warehouse as is in teh data_summit list
-        self.data_summit[self.warehouse].set_warehouse()
+        for i in self.warehouse:
+            self.data_summit[i].set_warehouse()
 
         # generate the vehicles
         self.vehicle_generator(number_of_vehicle, number_of_summit)
