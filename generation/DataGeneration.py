@@ -19,7 +19,7 @@ def clearConsole(): os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 class DataGeneration:
     warehouse = 0
     data_matrix = []
-    data_segment: [[Segment]] = []
+    data_segment: [[Segment]] = [[]]
     data_summit: [Summit] = []
     data_vehicles: [Vehicle] = []
     bar = progressbar.ProgressBar(max_value=100)
@@ -47,15 +47,28 @@ class DataGeneration:
         graph = nx.watts_strogatz_graph(number_of_summit, max_neighbor, 1)
         q = 0
         mat = nx.adj_matrix(graph)
-        for x, y in graph.edges():
-            self.bar.update(q * 50 / len(graph.edges()))
-            self.data_segment[x][y] = Segment(x, y)
+        self.data_matrix = mat.toarray()
+        xx = 0
+        self.data_segment = []
+        for x in self.data_matrix:
+            tm = []
+            yy = 0
+            for y in np.nditer(x):
+                if y == 1:
+                    self.bar.update(q * 50 / int(len(self.data_matrix)^2))
+                    tm.append(Segment(xx, yy))
+                else:
+                    tm.append(None)
+                yy += 1
+            self.data_segment.append(tm)
+            xx += 1
             q += 1
         for i in range(number_of_summit):
             self.bar.update(50 + i * 50 / number_of_summit)
             self.data_summit.append(Summit([k for k in graph[i].keys()], i))
         # Convert graph to 2nd array adjacency matrix
-        self.data_matrix = mat.toarray()
+
+
 
     def display(self, save=False) -> None:
         # Convert the matrix array into an numpy matrix

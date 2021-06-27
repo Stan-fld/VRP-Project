@@ -14,13 +14,6 @@ def remove_img(fn):
     os.remove(f'{fn}.jpg')
 
 
-def path_to_adjm(p:[int]):
-    g = nx.DiGraph()
-
-    for i, sid in enumerate(p):
-        g.add_edge(sid, p[i+1])
-
-
 def matrix_to_img(matrix, summit) -> str:
     M = np.array(matrix)
     # Generate the figure
@@ -91,30 +84,25 @@ class RoadMap:
                 offset -= 20
 
         for vh in data.data_vehicles:
-            #mock :
-            vh.itinerary = [
-                        [0, 1, 0, 1, 0, 1, 1, 1, 1, 0],
-                        [1, 0, 0, 1, 1, 1, 0, 0, 0, 1],
-                        [0, 0, 1, 1, 1, 1, 1, 1, 0, 1],
-                        [1, 1, 1, 1, 0, 0, 0, 1, 1, 0],
-                        [0, 1, 1, 0, 0, 0, 1, 0, 0, 1],
-                        [1, 1, 1, 0, 0, 0, 1, 0, 0, 1],
-                        [1, 0, 1, 0, 1, 1, 0, 0, 1, 1],
-                        [1, 0, 1, 1, 0, 0, 0, 1, 0, 1],
-                        [1, 0, 0, 1, 0, 0, 1, 0, 1, 0],
-                        [0, 1, 1, 0, 1, 1, 1, 1, 0, 1]]
             c.showPage()
             c.drawString(100, 800, f"Feuille de route pour la voiture {vh.id}")
-            c.drawString(100, 780, "graph de route")
-            fn = matrix_to_img(vh.itinerary, data.data_summit)
-            c.drawImage(f'{fn}.jpg', 0, 760 - 4 * inch, height=4 * inch, preserveAspectRatio=True, mask='auto')
-            remove_img(fn)
-            offset = 740 - 4 * inch
-            cycle = cycleEulerien(vh.itinerary)
-            for i in cycle:
-                smt = data.data_summit[i-1]
+            offset = 780
+            idx = 0
+            for i, stop in enumerate(vh.full_itinerary):
+                print(vh.itinerary)
+                smt = data.data_summit[stop]
                 # todo print the intems to deliver ...
-                c.drawString(100, offset, f"n° {i-1} : {smt}")
+                if i == 0:
+                    c.drawString(100, offset, f"Stop n° {i} : {smt}")
+                else:
+                    print(f'{smt.id} -> {vh.itinerary[idx]}')
+                    print(f'{smt.id == vh.itinerary[idx]}')
+                    if (smt.id == vh.itinerary[idx] and smt.id not in data.warehouse) or (smt.id == vh.itinerary[idx] and smt.id == data.warehouse[vh.kind]):
+                        c.drawString(100, offset, f"Stop n° {i} : {smt}")
+                        idx += 1
+                    else:
+                        c.drawString(100, offset, f"Stop n° {i} : {smt.str_as_stopover()}")
+
                 if offset - 20 < 20:
                     c.showPage()
                     offset = 800

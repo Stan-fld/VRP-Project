@@ -1,4 +1,5 @@
 import os
+import time
 from time import sleep
 
 from pymongo import database
@@ -30,14 +31,20 @@ if __name__ == '__main__':
             sleep(3)
             quit(0)
         elif inp == "1":  # Generate + store
-            data = DataGeneration(number_of_summit=50, number_of_vehicle=10, max_neighbor=5, number_of_kind_of_item=4)
+            data = DataGeneration(number_of_summit=100, number_of_vehicle=10, max_neighbor=5, number_of_kind_of_item=4)
             #DBConnection.infos_collection.insert_one(data.toJSON())
             data.display()
-            clearConsole()
+            #clearConsole()
         elif inp == "2":  # Load from DB
             clearConsole()
-            data.pf.do(data, "dj")
-            data.pf.do(data, "fw")
+            start = time.time()
+            data.pf.do(data, "fw", 100)
+            end = time.time()
+            print(end - start)
+            '''start = time.time()
+            data.pf.do(data, "dj", 100)
+            end = time.time()
+            print(end - start)'''
 
         elif inp == "3":  # Pathfinding + RoadMap
             if data is not None:

@@ -18,7 +18,7 @@ class Summit:
         self.id = id
         self.neighbors = predefined_neighbors
         self.kind = 0
-        self.item_to_deliver = {"kind": random.randint(0, 3), "qtt": random.randint(0, 5)}
+        self.item_to_deliver = {"kind": random.randint(0, 3), "qtt": random.randint(1, 5)}
 
     def set_warehouse(self):
         self.kind = 1
@@ -30,4 +30,10 @@ class Summit:
         return {"id": self.id, "available_time_slot": self.available_time_slot, "predefined_neighbors": self.predefined_neighbors, "kind": self.kind, "item_to_deliver": self.item_to_deliver}
 
     def __str__(self):
-        return f"Sommet {self.id} de type {self.kind}, plage horaire : {self.available_time_slot[0]}h à {self.available_time_slot[1]}h"
+        if self.kind == 0:
+            return f"Sommet {self.id} de type Adresse, items : {self.item_to_deliver.get('qtt')} d'objet n°{self.item_to_deliver.get('kind')}"
+        else:
+            return f"Sommet {self.id} de type DEPOT ⌂⌂⌂⌂⌂"
+
+    def str_as_stopover(self):
+        return f"Sommet {self.id} intermédiaire"
