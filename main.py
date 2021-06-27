@@ -29,7 +29,7 @@ if __name__ == '__main__':
             sleep(3)
             quit(0)
         elif inp == "1":  # Generate + store
-            data = DataGeneration(number_of_summit=10, number_of_vehicle=10, max_neighbor=5)
+            data = DataGeneration(number_of_summit=10, number_of_vehicle=10, max_neighbor=5, number_of_kind_of_item=4)
             db.infos_collection.delete_many({})  # delete old data
             db.infos_collection.insert_one(data.toJSON())  # add new data
             data.display()
