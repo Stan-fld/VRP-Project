@@ -8,10 +8,9 @@ class Vehicle:
     id = 0
     kind = 0
     load = []
-    max_speed = 0
     itinerary = []
     full_itinerary = []
-    stock = {}
+    stock = 0
 
     def load(self):
         # scooter
@@ -28,15 +27,10 @@ class Vehicle:
         self.id = str(uuid.uuid4())[:8]
         self.kind = kind
         self.load()
-        self.max_speed = random.randint(20, 100)
 
     def toJSON(self):
         """
         serialize the object in json
         """
-        return {"id": self.id, "kind": self.kind, "load": self.stock, "max_speed": self.max_speed}
+        return {"id": self.id, "kind": self.kind, "load": self.stock}
 
-    def deliver_object(self, kind, qtt):
-        for k, v in self.stock:
-            if v['kind'] == kind and v.qtt >= qtt:
-                v.qtt -= qtt

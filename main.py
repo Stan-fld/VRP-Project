@@ -29,21 +29,21 @@ if __name__ == '__main__':
             sleep(3)
             quit(0)
         elif inp == "1":  # Generate + store
-            data = DataGeneration(number_of_summit=10, number_of_vehicle=10, max_neighbor=5, number_of_kind_of_item=4)
-            db.infos_collection.delete_many({})  # delete old data
-            db.infos_collection.insert_one(data.toJSON())  # add new data
-            data.display()
-            #clearConsole()
+            data = DataGeneration(number_of_summit=1000, number_of_vehicle=10, max_neighbor=5, number_of_kind_of_item=4)
+            #db.infos_collection.delete_many({})  # delete old data
+            #db.infos_collection.insert_one(data.toJSON())  # add new data
+            #data.display()
+            clearConsole()
         elif inp == "2":  # Load from DB
             clearConsole()
-            start = time.time()
-            data.pf.do(data, "fw", 100)
-            end = time.time()
-            print(end - start)
             '''start = time.time()
-            data.pf.do(data, "dj", 100)
+            data.pf.do(data, "fw", 50)
             end = time.time()
             print(end - start)'''
+            start = time.time()
+            data.pf.do(data, "dj", 10)
+            end = time.time()
+            print(end - start)
 
         elif inp == "3":  # Pathfinding + RoadMap
             if data is not None:

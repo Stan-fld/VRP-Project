@@ -19,16 +19,16 @@ class PathFinding:
             for vh in dt:
                 for i, sm in enumerate(vh.full_itinerary):
                     if i < len(vh.full_itinerary) - 1:
-                        wg += data.data_segment[sm][vh.full_itinerary[i+1]].price
-            av_weight.append(wg/len(dt))
+                        wg += data.data_segment[sm][vh.full_itinerary[i + 1]].price
+            av_weight.append(wg / len(dt))
         idx_bets_solution = av_weight.index(min(av_weight))
         return self.solutions[idx_bets_solution]
 
-    def do(self, data, fx, number_of_loop = 20):
+    def do(self, data, fx, number_of_loop=20):
         def func(u, v, d):
             nonlocal data
             if data.data_segment[u][v] is None:
-                return 0
+                return np.inf
             return data.data_segment[u][v].price
 
         def djikstra(g, frm, to):
@@ -42,6 +42,7 @@ class PathFinding:
                 return floyd_warshall(p, frm, to)
             else:
                 return djikstra(g, frm, to)
+
         g = data.to_di_graph()
         # generate data for the algo
         if fx == "fw":
@@ -57,7 +58,7 @@ class PathFinding:
             smt_arr = [[] for x in range(data.number_of_kind_of_item)]
 
             vh_arr = [[] for x in range(data.number_of_kind_of_item)]
-            # sor tthe vehicles by kind
+            # store the vehicles by kind
             for i, x in enumerate(data.data_vehicles):
                 vh_arr[x.kind].append(data.data_vehicles.index(x))
             # sort the summits by item kind
@@ -68,7 +69,8 @@ class PathFinding:
             for t, s in enumerate(smt_arr):
                 tp = np.array_split(np.array(s), len(vh_arr[t]))
                 for z, x in enumerate(vh_arr[t]):
-                    data.data_vehicles[x].itinerary = tp[z].tolist() + [data.data_summit[data.warehouse[data.data_vehicles[x].kind]].id]
+                    data.data_vehicles[x].itinerary = tp[z].tolist() + [
+                        data.data_summit[data.warehouse[data.data_vehicles[x].kind]].id]
             # loop on all the vehicle itineraries, finding the shortest pah between stops
             vh_arr_cp = [copy.deepcopy(x) for x in data.data_vehicles]
             for vh in vh_arr_cp:
@@ -76,12 +78,11 @@ class PathFinding:
                 for i in vh.itinerary:
                     if vh.stock - data.data_summit[i].item_to_deliver.get('qtt') < 0 and data.data_summit[i].kind == 0:
                         vh.load()
-                        vh.full_itinerary += vrp(fx, g, vh.full_itinerary[-1], data.data_summit[data.warehouse[vh.kind]].id, predecessors)
+                        vh.full_itinerary += vrp(fx, g, vh.full_itinerary[-1],
+                                                 data.data_summit[data.warehouse[vh.kind]].id, predecessors)
                     vh.full_itinerary += vrp(fx, g, vh.full_itinerary[-1], i, predecessors)
                     vh.stock -= data.data_summit[i].item_to_deliver.get('qtt')
 
             self.solutions.append(vh_arr_cp)
         # Store the best solution
         data.data_vehicles = self.find_best_solution(data)
-        print(f"final\n{data.data_vehicles[0].full_itinerary}")
-        print(f"final\n{data.data_vehicles[0].itinerary}")

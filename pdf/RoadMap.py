@@ -40,25 +40,6 @@ def matrix_to_img(matrix, summit) -> str:
     return fn
 
 
-def cycleEulerien(matrice):
-    n = len(matrice)
-
-    cycle = list()
-    stack = list()
-    cur = 0
-    while stack != [] or sum(matrice[cur]) != 0:
-        voisins = [i for i, value in enumerate(matrice[cur]) if matrice[cur][i]]
-        if len(voisins) == 0:
-            cycle.append(cur+1)
-            cur = stack.pop()
-        else:
-            stack.append(cur)
-            matrice[cur][voisins[0]] = False
-            matrice[voisins[0]][cur] = False
-            cur = voisins[0]
-    return cycle
-
-
 class RoadMap:
     file_name = "default_name"
 
@@ -89,20 +70,15 @@ class RoadMap:
             offset = 780
             idx = 0
             for i, stop in enumerate(vh.full_itinerary):
-                print(vh.itinerary)
                 smt = data.data_summit[stop]
-                # todo print the intems to deliver ...
                 if i == 0:
                     c.drawString(100, offset, f"Stop n° {i} : {smt}")
                 else:
-                    print(f'{smt.id} -> {vh.itinerary[idx]}')
-                    print(f'{smt.id == vh.itinerary[idx]}')
-                    if (smt.id == vh.itinerary[idx] and smt.id not in data.warehouse) or (smt.id == vh.itinerary[idx] and smt.id == data.warehouse[vh.kind]):
+                    if smt.id == vh.itinerary[idx] or smt.id == data.warehouse[vh.kind]:
                         c.drawString(100, offset, f"Stop n° {i} : {smt}")
                         idx += 1
                     else:
                         c.drawString(100, offset, f"Stop n° {i} : {smt.str_as_stopover()}")
-
                 if offset - 20 < 20:
                     c.showPage()
                     offset = 800

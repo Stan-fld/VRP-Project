@@ -27,21 +27,19 @@ class DataGeneration:
     number_of_kind_of_item = 0
 
     def vehicle_generator(self, number_of_vehicle, number_of_summit) -> None:
-        def gv (kind):
+        def gv(kind):
             # Create a vehicle
             vh = Vehicle(kind)
             # Load the vehicle (predefined items)
             vh.load()
             # Store the vehicle in data_vehicle
             self.data_vehicles.append(vh)
+
         for i in range(self.number_of_kind_of_item):
             gv(i)
         # Generate X vehicle(s)
-        for i in range(number_of_vehicle-self.number_of_kind_of_item):
+        for i in range(number_of_vehicle - self.number_of_kind_of_item):
             gv(random.randint(0, 3))
-
-
-
 
     def matrix_generator(self, number_of_summit, max_neighbor) -> None:
         graph = nx.watts_strogatz_graph(number_of_summit, max_neighbor, 1)
@@ -55,7 +53,7 @@ class DataGeneration:
             yy = 0
             for y in np.nditer(x):
                 if y == 1:
-                    self.bar.update(q * 50 / int(len(self.data_matrix)^2))
+                    self.bar.update(q * 50 / int(len(self.data_matrix) ^ 2))
                     tm.append(Segment(xx, yy))
                 else:
                     tm.append(None)
@@ -65,10 +63,8 @@ class DataGeneration:
             q += 1
         for i in range(number_of_summit):
             self.bar.update(50 + i * 50 / number_of_summit)
-            self.data_summit.append(Summit([k for k in graph[i].keys()], i))
+            self.data_summit.append(Summit(i))
         # Convert graph to 2nd array adjacency matrix
-
-
 
     def display(self, save=False) -> None:
         # Convert the matrix array into an numpy matrix
@@ -81,7 +77,9 @@ class DataGeneration:
         # Set color map
         cmap = ['darkorange' if x.kind == 1 else 'dodgerblue' for x in self.data_summit]
         # Draw the graph and specify our characteristics
-        lbl = [f'Dépot \ntype: {self.warehouse.index(x.id)}' if x.kind == 1 else f'Adresse \n{self.data_summit.index(x)}' for x in self.data_summit]
+        lbl = [
+            f'Dépot \ntype: {self.warehouse.index(x.id)}' if x.kind == 1 else f'Adresse \n{self.data_summit.index(x)}'
+            for x in self.data_summit]
         nx.draw(G2, with_labels=True, node_color=cmap,
                 node_size=node_sizes, font_size=8, font_weight="bold", width=0.75,
                 edgecolors='gray', labels={i: lbl[i] for i in range(len(lbl))})
@@ -97,7 +95,10 @@ class DataGeneration:
         """
         serialize the object in json
         """
-        return {"warehouse": self.warehouse, "data_matrix": [[int(y) for y in x] for x in self.data_matrix], "data_segment": [[x.toJSON() if type(x) is Segment else "null" for x in z] for z in self.data_segment], "data_vehicles": [x.toJSON() for x in self.data_vehicles], "data_summit": [x.toJSON() for x in self.data_summit]}
+        return {"warehouse": self.warehouse, "data_matrix": [[int(y) for y in x] for x in self.data_matrix],
+                "data_segment": [[x.toJSON() if type(x) is Segment else "null" for x in z] for z in self.data_segment],
+                "data_vehicles": [x.toJSON() for x in self.data_vehicles],
+                "data_summit": [x.toJSON() for x in self.data_summit]}
 
     def __init__(self, number_of_summit, number_of_vehicle, max_neighbor, number_of_kind_of_item):
         clearConsole()
@@ -125,7 +126,7 @@ class DataGeneration:
             if nx.is_strongly_connected(g):
                 break
         #
-        #self.data_matrix = [[z*random.randint(0, 10) for z in x]for x in self.data_matrix]
+        # self.data_matrix = [[z*random.randint(0, 10) for z in x]for x in self.data_matrix]
         # Set the warehouse as is in teh data_summit list
         for i in self.warehouse:
             self.data_summit[i].set_warehouse()
