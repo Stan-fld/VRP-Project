@@ -2,7 +2,7 @@ import os
 import time
 from time import sleep
 
-from database import DBConnection as db
+from database import DBManagement as dbm
 from generation.DataGeneration import DataGeneration
 from pdf.RoadMap import RoadMap
 
@@ -30,9 +30,8 @@ if __name__ == '__main__':
             quit(0)
         elif inp == "1":  # Generate + store
             data = DataGeneration(number_of_summit=1000, number_of_vehicle=10, max_neighbor=5, number_of_kind_of_item=4)
-            #db.infos_collection.delete_many({})  # delete old data
-            #db.infos_collection.insert_one(data.toJSON())  # add new data
-            #data.display()
+            dbm.store_data(data)
+            # data.display()
             clearConsole()
         elif inp == "2":  # Load from DB
             clearConsole()
