@@ -29,23 +29,25 @@ if __name__ == '__main__':
             sleep(3)
             quit(0)
         elif inp == "1":  # Generate + store
-            data = DataGeneration(number_of_summit=1000, number_of_vehicle=10, max_neighbor=5, number_of_kind_of_item=4)
+            data = DataGeneration(number_of_summit=500, number_of_vehicle=10, max_neighbor=5, number_of_kind_of_item=4)
             dbm.store_data(data)
             # data.display()
             clearConsole()
         elif inp == "2":  # Load from DB
+            data = dbm.get_data_generation()
+            #data.display()
             clearConsole()
             '''start = time.time()
             data.pf.do(data, "fw", 50)
             end = time.time()
             print(end - start)'''
-            start = time.time()
-            data.pf.do(data, "dj", 10)
-            end = time.time()
-            print(end - start)
 
         elif inp == "3":  # Pathfinding + RoadMap
             if data is not None:
+                start = time.time()
+                data.pf.do(data, "dj", 10)
+                end = time.time()
+                print(end - start)
                 # todo call the pathfinding here
                 radmap_instance = RoadMap('test')
                 radmap_instance.generate(data)

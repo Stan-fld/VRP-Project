@@ -1,6 +1,18 @@
+import gridfs
 from pymongo import MongoClient
 
-cluster = MongoClient("mongodb+srv://Admin:admin@cluster0.xgnbt.mongodb.net/DBProject?retryWrites=true&w=majority")
-db = cluster["DBProject"]
 
-db_collections = [db["warehouse"], db["matrix"], db["segment"], db["vehicles"], db["summit"]]
+def mongo_con():
+    try:
+        cluster = MongoClient(
+            'mongodb+srv://Admin:admin@cluster0.xgnbt.mongodb.net/DBProject?retryWrites=true&w=majority')
+        return cluster
+    except Exception as e:
+        print('Error in mongo connection:*', e)
+
+
+db = mongo_con()['DBProject']
+fs = gridfs.GridFS(db)
+fs_collections = [db['fs.chunks'], db['fs.files']]
+
+#db_collections = [db['warehouse'], db['matrix'], db['segment'], db['vehicles'], db['summit']]
