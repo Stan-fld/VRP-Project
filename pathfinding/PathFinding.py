@@ -4,6 +4,14 @@ import networkx as nx
 import numpy as np
 import progressbar
 
+def average_weight(data):
+    wg = 0
+    for vh in data.data_vehicles:
+        for i, sm in enumerate(vh.full_itinerary):
+            if i < len(vh.full_itinerary) - 1:
+                wg += data.data_segment[sm][vh.full_itinerary[i + 1]].price
+    return wg
+
 
 class PathFinding:
     bar = progressbar.ProgressBar(max_value=100)
