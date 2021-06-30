@@ -26,6 +26,10 @@ def get_stat_from_mongo():
     return db.stat_colletion.find()
 
 
+def get_number_of_stored_stat():
+    return db.stat_colletion.count()
+
+
 def store_stat_to_mongo(stat):
     db.stat_colletion.insert_one(stat)
 
