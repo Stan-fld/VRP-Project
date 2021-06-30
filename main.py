@@ -1,3 +1,4 @@
+import json
 import os
 import time
 from time import sleep
@@ -23,7 +24,7 @@ if __name__ == '__main__':
         print('{:.<5s}{:<10}'.format("3", "Calculer + RoadMap"))
         print('{:.<5s}{:<10}'.format("4", "Generate stat data"))
         print('{:.<5s}{:<10}'.format("5", "compute stat data"))
-        while (inp := (input("Entrez votre choix :"))) not in ["0", "1", "2", "3"]:
+        while (inp := (input("Entrez votre choix :"))) not in ["0", "1", "2", "3", "4", "5"]:
             print("Veuillez entrer un chiffre correcte")
         clearConsole()
         if inp == "0":  # quitter
@@ -38,7 +39,7 @@ if __name__ == '__main__':
             clearConsole()
         elif inp == "2":  # Load from DB
             data = dbm.get_data_generation()
-            #data.display()
+            # data.display()
             clearConsole()
             '''start = time.time()
             data.pf.do(data, "fw", 50)
@@ -56,37 +57,51 @@ if __name__ == '__main__':
                 roadmap_instance.generate(data)
             else:
                 print("Les données ne sont pas chargées merci de les générer ou de les importer (1 ou 2)\n")
-        elif inp == "4": # stat mode
+        elif inp == "4":  # stat mode
             for i in range(10):
-                summits = 500
+                summits = 50
                 vehicles = 10
                 neighbors = 3
-                for y in range(100):
+                for y in range(10):
                     for z in range(20):
+                        print(z)
                         bdd_entry = {"summits": summits, "vehicles": vehicles, "neighbors": neighbors}
                         start = time.time()
-                        data = DataGeneration(number_of_summit=1000, number_of_vehicle=10, max_neighbor=5, number_of_kind_of_item=4)
+                        data = DataGeneration(number_of_summit=summits, number_of_vehicle=vehicles, max_neighbor=neighbors,
+                                              number_of_kind_of_item=4, progressbar=False)
                         end = time.time()
-                        bdd_entry['generation'] = end-start
+                        bdd_entry['generation'] = end - start
                         start = time.time()
                         data.pf.do(data, "dj", 10)
                         end = time.time()
-                        bdd_entry['pathfinding_dj'] = end-start
+                        bdd_entry['pathfinding_dj'] = end - start
+                        bdd_entry['average_weight_dj'] = average_weight(data)
                         start = time.time()
                         data.pf.do(data, "fw", 10)
                         end = time.time()
-                        bdd_entry['roadmap'] = end-start
-                        bdd_entry['average_weight'] = average_weight(data)
+                        bdd_entry['pathfinding_fw'] = end - start
+                        bdd_entry['average_weight_fw'] = average_weight(data)
                         start = time.time()
                         roadmap_instance = RoadMap('test')
                         roadmap_instance.generate(data)
                         end = time.time()
-                        bdd_entry['roadmap'] = end-start
-                        #todo stoto into stat collection
-
+                        bdd_entry['roadmap'] = end - start
+                        del data.data_segment
+                        del data.data_vehicles
+                        del data.data_matrix
+                        del data.pf
+                        del roadmap_instance
+                        del data
+                        print("store to MongoDB")
+                        dbm.store_stat_to_mongo(json.loads(json.dumps(bdd_entry)))
+                        # Store to file as backup if network link down
+                        file_object = open('dump.json', 'a')
+                        file_object.write(",\n"+json.dumps(bdd_entry))
+                        file_object.close()
                         neighbors += 1
                     vehicles += 1
-                summits += 500
+                summits += 5
         elif inp == "5":
+            dbm.get_stat_from_mongo()
             # todo use the data from bdd to create stat analysis
             pass

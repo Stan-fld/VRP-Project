@@ -21,6 +21,14 @@ def store_data(data: DataGeneration):
     db.fs.put(json_str, encoding='utf-8', filename=name)
 
 
+def get_stat_from_mongo():
+    print(db.stat_colletion.count())
+
+
+def store_stat_to_mongo(stat):
+    db.stat_colletion.insert_one(stat)
+
+
 def get_data_generation() -> DataGeneration:
     # Get last data generated
     data_generation = db.fs.get_last_version(name).read()

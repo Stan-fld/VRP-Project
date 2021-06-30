@@ -103,17 +103,16 @@ class DataGeneration:
             "data_summit": [x.toJSON() for x in self.data_summit]
         }
 
-    def __init__(self, number_of_summit, number_of_vehicle, max_neighbor, number_of_kind_of_item):
-        clearConsole()
-        self.df = PathFinding(number_of_summit)
-        self.bar.start()
+    def __init__(self, number_of_summit, number_of_vehicle, max_neighbor, number_of_kind_of_item, progressbar = True):
+        self.pf = PathFinding(number_of_summit)
+        if progressbar:
+            clearConsole()
+            self.bar.start()
         self.number_of_kind_of_item = number_of_kind_of_item
         # Generate the warehouse id
         self.warehouse = [random.randint(0, number_of_summit - 1) for x in range(self.number_of_kind_of_item)]
-        y = 0
         while True:
             # Generate empty data_segment
-            self.data_segment = [[None for j in range(number_of_summit)] for i in range(number_of_summit)]
             self.data_matrix = []
             self.data_summit = []
 
@@ -136,7 +135,8 @@ class DataGeneration:
 
         # generate the vehicles
         self.vehicle_generator(number_of_vehicle, number_of_summit)
-        self.bar.finish()
+        if progressbar:
+            self.bar.finish()
         print("Les données on été générées")
 
     def to_di_graph(self):

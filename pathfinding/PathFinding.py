@@ -18,7 +18,7 @@ class PathFinding:
     solutions = []
 
     def __init__(self, number_of_summit):
-        self.p2p_array = [[[] for j in range(number_of_summit)] for i in range(number_of_summit)]
+        pass
 
     def find_best_solution(self, data):
         av_weight = []
@@ -33,10 +33,11 @@ class PathFinding:
         return self.solutions[idx_bets_solution]
 
     def do(self, data, fx, number_of_loop=20):
+        self.solutions = []
         def func(u, v, d):
             nonlocal data
             if data.data_segment[u][v] is None:
-                return np.inf
+                return 999999
             return data.data_segment[u][v].price
 
         def djikstra(g, frm, to):
