@@ -17,27 +17,29 @@ if __name__ == '__main__':
 
     while True:
 
-        print("Que voulez vous faire ? ")
-        print('{:.<5s}{:<10}'.format("0", "Quitter"))
-        print('{:.<5s}{:<10}'.format("1", "Générer et stocker en BDD"))
-        print('{:.<5s}{:<10}'.format("2", "Récuperer les données depuis la BDD"))
-        print('{:.<5s}{:<10}'.format("3", "Calculer + RoadMap"))
+        print("What do you want to do?")
+        print('{:.<5s}{:<10}'.format("0", "Exit"))
+        print('{:.<5s}{:<10}'.format("1", "Generate and store in DB"))
+        print('{:.<5s}{:<10}'.format("2", "Retrieve data from the DB"))
+        print('{:.<5s}{:<10}'.format("3", "Calculate + RoadMap"))
         print('{:.<5s}{:<10}'.format("4", "Generate stat data"))
-        print('{:.<5s}{:<10}'.format("5", "compute stat data"))
-        while (inp := (input("Entrez votre choix :"))) not in ["0", "1", "2", "3", "4", "5"]:
-            print("Veuillez entrer un chiffre correcte")
+        print('{:.<5s}{:<10}'.format("5", "Compute stat data"))
+        while (inp := (input("Enter your choice :"))) not in ["0", "1", "2", "3", "4", "5"]:
+            print("Please enter a correct number")
         clearConsole()
         if inp == "0":  # quitter
-            print("Merci d'avoir utilisé notre logiciel !")
-            print("Il se fermera dans 3 secondes...")
+            print("Thank you for using our software !")
+            print("It will close in three seconds...")
             sleep(3)
             quit(0)
         elif inp == "1":  # Generate + store
             data = DataGeneration(number_of_summit=500, number_of_vehicle=10, max_neighbor=5, number_of_kind_of_item=4)
+            clearConsole()
+            print('The data is being stored, please be patient !')
             dbm.store_data(data)
             # data.display()
-            clearConsole()
         elif inp == "2":  # Load from DB
+            print('Data recovery, please wait')
             data = dbm.get_data_generation()
             # data.display()
             clearConsole()
@@ -48,15 +50,18 @@ if __name__ == '__main__':
 
         elif inp == "3":  # Pathfinding + RoadMap
             if data is not None:
+                print('Path calculation, please wait')
                 start = time.time()
                 data.pf.do(data, "dj", 10)
                 end = time.time()
                 print(end - start)
+                clearConsole()
+                print('Generation of the pdf, please wait')
                 # todo call the pathfinding here
                 roadmap_instance = RoadMap('test')
                 roadmap_instance.generate(data)
             else:
-                print("Les données ne sont pas chargées merci de les générer ou de les importer (1 ou 2)\n")
+                print("The data is not loaded, please generate or import it (1 or 2)\n")
         elif inp == "4":  # stat mode
             for i in range(10):
                 summits = 50
@@ -102,6 +107,6 @@ if __name__ == '__main__':
                     vehicles += 1
                 summits += 5
         elif inp == "5":
-            dbm.get_stat_from_mongo()
+            stats = dbm.get_stat_from_mongo()
             # todo use the data from bdd to create stat analysis
             pass

@@ -22,7 +22,8 @@ def store_data(data: DataGeneration):
 
 
 def get_stat_from_mongo():
-    print(db.stat_colletion.count())
+    # print(db.stat_colletion.count())
+    return db.stat_colletion.find()
 
 
 def store_stat_to_mongo(stat):
@@ -37,7 +38,8 @@ def get_data_generation() -> DataGeneration:
     json_object = json_util.loads(data_generation)
 
     # Create an object DataGeneration
-    data = DataGeneration(number_of_summit=100, number_of_vehicle=10, max_neighbor=5, number_of_kind_of_item=4)
+    data = DataGeneration(number_of_summit=100, number_of_vehicle=10, max_neighbor=5, number_of_kind_of_item=4,
+                          progressbar=False)
     for k, v in json_object.items():
         if k == 'warehouse':
             data.warehouse = v
