@@ -62,8 +62,8 @@ if __name__ == '__main__':
             else:
                 print("The data is not loaded, please generate or import it (1 or 2)\n")
         elif inp == "4":  # stat mode
-            summ = input("Number of summit : ")
-            step = input("step :")
+            summ = int(input("Number of summit : "))
+            step = int(input("step :"))
             for i in range(10):
                 summits = summ
                 vehicles = 10

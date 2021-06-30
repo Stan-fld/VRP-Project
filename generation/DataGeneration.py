@@ -42,9 +42,13 @@ class DataGeneration:
             gv(random.randint(0, 3))
 
     def matrix_generator(self, number_of_summit, max_neighbor) -> None:
-        graph = nx.watts_strogatz_graph(number_of_summit, max_neighbor, 1)
-        q = 0
-        mat = nx.adj_matrix(graph)
+        isc = False
+        while not isc:
+            graph = nx.watts_strogatz_graph(number_of_summit, max_neighbor, 1)
+            q = 0
+            mat = nx.adj_matrix(graph)
+            g2 = nx.DiGraph(mat)
+            isc = nx.is_strongly_connected(g2)
         self.data_matrix = mat.toarray()
         xx = 0
         self.data_segment = []
@@ -111,23 +115,13 @@ class DataGeneration:
         self.number_of_kind_of_item = number_of_kind_of_item
         # Generate the warehouse id
         self.warehouse = [random.randint(0, number_of_summit - 1) for x in range(self.number_of_kind_of_item)]
-        while True:
-            # Generate empty data_segment
-            self.data_matrix = []
-            self.data_summit = []
+        # empty all arrays
+        self.data_matrix = []
+        self.data_summit = []
+        self.data_segment = []
+        # generate the matrix randomly and check for constrains
+        self.matrix_generator(number_of_summit, max_neighbor)
 
-            # generate the matrix randomly and check for constrains
-            self.matrix_generator(number_of_summit, max_neighbor)
-
-            # Convert the matrix array into an numpy matrix
-            M = np.array(self.data_matrix)
-
-            # Generate the figure
-            g = nx.DiGraph(M)
-            # if graph is connected the generation is considered good
-            if nx.is_strongly_connected(g):
-                break
-        #
         # self.data_matrix = [[z*random.randint(0, 10) for z in x]for x in self.data_matrix]
         # Set the warehouse as is in teh data_summit list
         for i in self.warehouse:
