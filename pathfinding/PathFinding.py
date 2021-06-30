@@ -34,10 +34,11 @@ class PathFinding:
 
     def do(self, data, fx, number_of_loop=20):
         self.solutions = []
-        def func(u, v, d):
+
+        def func(u, v, d = None):
             nonlocal data
             if data.data_segment[u][v] is None:
-                return 999999
+                return np.inf
             return data.data_segment[u][v].price
 
         def djikstra(g, frm, to):
@@ -46,9 +47,14 @@ class PathFinding:
         def floyd_warshall(p, frm, to):
             return nx.reconstruct_path(frm, to, p)[1:]
 
+        def a_star(g, frm, to):
+            return nx.astar_path(g, frm, to, func)[1:]
+
         def vrp(f, g, frm, to, p):
             if f == "fw":
                 return floyd_warshall(p, frm, to)
+            elif f == "astar":
+                return a_star(g, frm, to)
             else:
                 return djikstra(g, frm, to)
 

@@ -74,24 +74,27 @@ if __name__ == '__main__':
                         bdd_entry = {"summits": summits, "vehicles": vehicles, "neighbors": neighbors}
                         start = time.time()
                         data = DataGeneration(number_of_summit=summits, number_of_vehicle=vehicles, max_neighbor=neighbors,
-                                              number_of_kind_of_item=4, progressbar=False)
+                                              number_of_kind_of_item=4)
                         end = time.time()
                         bdd_entry['generation'] = end - start
                         start = time.time()
                         data.pf.do(data, "dj", 10)
                         end = time.time()
                         bdd_entry['pathfinding_dj'] = end - start
+                        print(f"dj : {bdd_entry['pathfinding_dj']}")
                         bdd_entry['average_weight_dj'] = average_weight(data)
                         start = time.time()
-                        data.pf.do(data, "fw", 10)
+                        data.pf.do(data, "astar", 10)
                         end = time.time()
-                        bdd_entry['pathfinding_fw'] = end - start
-                        bdd_entry['average_weight_fw'] = average_weight(data)
+                        bdd_entry['pathfinding_astar'] = end - start
+                        print(f"fw : {bdd_entry['pathfinding_astar']}")
+                        bdd_entry['average_weight_astar'] = average_weight(data)
                         start = time.time()
                         roadmap_instance = RoadMap('test')
                         roadmap_instance.generate(data)
                         end = time.time()
                         bdd_entry['roadmap'] = end - start
+                        print(f"rm : {bdd_entry['roadmap']}")
                         del data.data_segment
                         del data.data_vehicles
                         del data.data_matrix
@@ -100,16 +103,11 @@ if __name__ == '__main__':
                         del data
                         print("store to MongoDB")
                         dbm.store_stat_to_mongo(json.loads(json.dumps(bdd_entry)))
-                        # Store to file as backup if network link down
-                        file_object = open('dump.json', 'a')
-                        file_object.write(",\n"+json.dumps(bdd_entry))
-                        file_object.close()
                         neighbors += 1
                     vehicles += 1
                 summits += step
         elif inp == "5":
             stats = dbm.get_stat_from_mongo()
-            file_object = open('stat.dmp', 'a')
             sm = []
             gn = []
             for x in stats:
