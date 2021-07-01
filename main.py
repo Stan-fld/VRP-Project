@@ -3,14 +3,13 @@ import os
 import time
 from time import sleep
 
-import numpy as np
-
 from database import DBManagement as dbm
 from generation.DataGeneration import DataGeneration
 from pathfinding.PathFinding import average_weight
-from pdf.RoadMap import RoadMap, remove_img
+from pdf.RoadMap import RoadMap
 from pdf.StatMap import StatMap
 from statistic import Stats
+
 
 def clearConsole(): os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 
@@ -73,7 +72,8 @@ if __name__ == '__main__':
                         print((z + 20 * y + i * 10) / 2000)
                         bdd_entry = {"summits": summits, "vehicles": vehicles, "neighbors": neighbors}
                         start = time.time()
-                        data = DataGeneration(number_of_summit=summits, number_of_vehicle=vehicles, max_neighbor=neighbors,
+                        data = DataGeneration(number_of_summit=summits, number_of_vehicle=vehicles,
+                                              max_neighbor=neighbors,
                                               number_of_kind_of_item=4)
                         end = time.time()
                         bdd_entry['generation'] = end - start
@@ -118,21 +118,37 @@ if __name__ == '__main__':
             ng = []
             ptg_dj = []
             avg_w_dj = []
+            ptg_astar = []
+            sm_astar = []
+            ng_astar = []
             for x in stats:
                 sm.append(x['summits'])
                 gn.append(x["generation"])
                 ng.append(x['neighbors'])
                 ptg_dj.append(x['pathfinding_dj'])
                 avg_w_dj.append(x['average_weight_dj'])
+                try:
+                    if x['pathfinding_astar']:
+                        ptg_astar.append(x['pathfinding_astar'])
+                        sm_astar.append(x['summits'])
+                        ng_astar.append(x['neighbors'])
+
+                except Exception as e:
+                    pass
 
             # linear regression for number of summit over graph generation time
-            b, r = Stats.linear_regression(sm, gn, "Number of summits", "Graph generation time (s)", "Graph representing a linear regression of \nnumber of summit over graph generation time.", True)
+            b, r = Stats.linear_regression(sm, gn, "Number of summits", "Graph generation time (s)",
+                                           "Graph representing a linear regression of \nnumber of summit over graph "
+                                           "generation time.",
+                                           True)
             stat_map.add_img(r)
             print(f"linear regression fx y ~ {round(b[0], 4)} + {round(b[1], 4)} * x")
             stat_map.add_txt(f"linear regression fx y ~ {round(b[0], 4)} + {round(b[1], 4)} * x")
 
             # linear regression for number of summit over Pathfinding time with Djikstra.
-            b, r = Stats.linear_regression(sm, ptg_dj, "Number of summits", "Pathfinding time with Djikstra (s)", "Graph representing a linear regression of \nnumber of summit over Pathfinding time with Djikstra.", True)
+            b, r = Stats.linear_regression(sm, ptg_dj, "Number of summits", "Pathfinding time with Djikstra (s)",
+                                           "Graph representing a linear regression of \nnumber of summit over Pathfinding time with Djikstra.",
+                                           True)
             print(f"linear regression fx y ~ {round(b[0], 4)} + {round(b[1], 4)} * x")
             stat_map.add_img(r)
             stat_map.add_txt(f"linear regression fx y ~ {round(b[0], 4)} + {round(b[1], 4)} * x")
@@ -140,13 +156,16 @@ if __name__ == '__main__':
             # Save the PDF file
             stat_map.save()
 
+            # plotting pathfinding Dijkstra
+            Stats.stats_pathfinding(sm=sm, ng=ng, ptg=ptg_dj,
+                                    title='Graph representing a progression of \nnumber of summit over Dijkstra pathfinding')
 
-
-            # plotting average pathfinding dj
-            Stats.stats_pathfinding_dj(sm=sm, ng=ng, ptg_dj=ptg_dj)
+            # plotting pathfinding A star
+            Stats.stats_pathfinding(sm=sm_astar, ng=ng_astar, ptg=ptg_astar,
+                                    title='Graph representing a progression of \nnumber of summit over A star pathfinding')
 
             # Plotting of the dj fix summits
             Stats.stat_dj_fix_summits()
 
             # Plotting of the dj fix neighbors
-            #Stats.stat_dj_fix_neighbors()
+            # Stats.stat_dj_fix_neighbors()

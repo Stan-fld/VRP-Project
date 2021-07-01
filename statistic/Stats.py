@@ -6,7 +6,7 @@ import pandas
 from matplotlib import pyplot
 
 
-def display_graph(plt: pyplot, save = False):
+def display_graph(plt: pyplot, save=False):
     if save:
         # Save graph to file
         fn = str(uuid.uuid4())[:6]
@@ -18,8 +18,8 @@ def display_graph(plt: pyplot, save = False):
         plt.show()
         return None
 
+
 from database import DBManagement
-from database.DBManagement import db
 
 
 def estimate_coef(x, y):
@@ -56,7 +56,7 @@ def plot_regression_line(x, y, b, x_name, y_name, title, save):
     plt.xlabel(x_name)
     plt.ylabel(y_name)
     plt.title(title)
-    display_graph(plt)
+    return display_graph(plt, save)
 
 
 def linear_regression(x, y, x_name, y_name, title, save=False) -> [int]:
@@ -69,13 +69,12 @@ def linear_regression(x, y, x_name, y_name, title, save=False) -> [int]:
 
 def stat_dj_fix_summits():
     stats = DBManagement.get_stat_from_mongo_sort_by_summits()
-    file_object = open('stat.dmp', 'a')
     time_dj = []
     number_neighbors = []
     for x in stats:
-      if x['summits'] == 500:
-        time_dj.append(x["pathfinding_dj"])
-        number_neighbors.append(x["neighbors"])
+        if x['summits'] == 500:
+            time_dj.append(x["pathfinding_dj"])
+            number_neighbors.append(x["neighbors"])
 
     plt.xlabel('Number of neighbors')
     plt.ylabel('Execution Time of Djikstra Algorithm')
@@ -108,25 +107,28 @@ def stat_dj_fix_neighbors():
     plt.show()
 
 
-def stats_pathfinding_dj(sm, ng, ptg_dj):
-    d = {'neighbors': ng, 'pathfinding_dj': ptg_dj, 'summit': sm}
+def stats_pathfinding(sm, ng, ptg, title):
+    d = {'neighbors': ng, 'pathfinding': ptg, 'summit': sm}
     df = pandas.DataFrame(data=d)
     neighbors_set = set(df['neighbors'])
     plt.figure()
     for neighbor in neighbors_set:
-        if neighbor <= 13:
-            selected_data = df.loc[df['neighbors'] == neighbor]
-            plt.scatter(selected_data['summit'], selected_data['pathfinding_dj'], label=neighbor)
+        selected_data = df.loc[df['neighbors'] == neighbor]
+        plt.scatter(selected_data['summit'], selected_data['pathfinding'], label=neighbor)
 
     # putting the value of the axes
-    max_value_x = np.max(sm) + 200
-    plt.xticks([i * 200 for i in range(int(max_value_x / 200))])
-    max_value_y = np.max(ptg_dj) + 50
-    plt.yticks([i * 25 for i in range(int(max_value_y / 25))])
+    max_value_x = max(sm) + 200
+    plt.xticks(np.arange(0, max_value_x, 200))
+    max_value_y = max(ptg) + 30
+    plt.yticks(np.arange(0, max_value_y, 25))
 
     # putting labels
     plt.xlabel('Summits')
-    plt.ylabel('Milliseconds ')
+    plt.ylabel('Seconds ')
     plt.legend()
 
+    # putting title
+    plt.title(title)
+
     plt.show()
+    plt.close()
