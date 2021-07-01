@@ -166,10 +166,13 @@ if __name__ == '__main__':
             # Plotting of the dj fix summits
             r = Stats.stat_dj_fix_summits(True)
             stat_map.add_img(r)
+            stat_map.add_txt(f"We had a graph with a defined number of summits (500) and we can see that" + '\n' + f"when we add neighbors (even a small amount), the execution time grows instantly.")
 
             # Plotting of the dj fix neighbors
             r = Stats.stat_dj_fix_neighbors(True)
             stat_map.add_img(r)
+            stat_map.add_txt(f"We had a graph with a defined number of neighbors (3) and we can see that when we add summits the execution time grows but we need a large amount of summits to influence the execution time ")
 
+            stat_map.add_txt(f"The conclusion we can make is that the number of neighbors influences more the execution time of the algorithm than the number of summits")
             # Save the PDF file
             stat_map.save()
