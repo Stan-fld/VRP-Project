@@ -9,6 +9,7 @@ from pathfinding.PathFinding import average_weight
 from pdf.RoadMap import RoadMap
 from pdf.StatMap import StatMap
 from statistic import Stats
+import pandas as pd
 
 
 def clearConsole(): os.system('cls' if os.name in ('nt', 'dos') else 'clear')
@@ -112,7 +113,8 @@ if __name__ == '__main__':
             # ax = plt.axes(projection='3d')
             # ax.scatter3D(x, y, z, c=z, cmap='BrBG_r')
             stats = dbm.get_stat_from_mongo()
-
+            with_dj = {}
+            with_astar = {'smt': [], 'pfas': [], 'pfdj': [], 'nei': []}
             sm = []
             gn = []
             ng = []
@@ -129,12 +131,36 @@ if __name__ == '__main__':
                 avg_w_dj.append(x['average_weight_dj'])
                 try:
                     if x['pathfinding_astar']:
-                        ptg_astar.append(x['pathfinding_astar'])
-                        sm_astar.append(x['summits'])
-                        ng_astar.append(x['neighbors'])
+                        with_astar['smt'].append(x['summits'])
+                        with_astar['pfas'].append(x['pathfinding_astar'])
+                        with_astar['pfdj'].append(x['pathfinding_dj'])
+                        with_astar['nei'].append(x['neighbors'])
 
                 except Exception as e:
                     pass
+
+
+            #number of summit over Pathfinding time
+            x = [[], []]
+            y = [[], []]
+            line_names = [[], []]
+            f = pd.DataFrame(with_astar).groupby(['smt'])['pfdj'].mean()
+            for i in f.index:
+                x[0].append(i)
+                y[0].append(f[i])
+                line_names[0] = "Pathfinding with Djikstra"
+            f = pd.DataFrame(with_astar).groupby(['smt'])['pfas'].mean()
+            for i in f.index:
+                x[1].append(i)
+                y[1].append(f[i])
+                line_names[1] = "Pathfinding with A*"
+
+            r = Stats.classic_lines_graph(x,y,"Number of summits", "Pathfinding time (in s)", line_names,
+                                          "Graph representing number of summit over Pathfinding time.",
+                                          True)
+            stat_map.add_img(r)
+            stat_map.add_txt("With this graph we can compare the pathfinding algorithm by their respective")
+            stat_map.add_txt("mean execution time.")
 
             # linear regression for number of summit over graph generation time
             b, r = Stats.linear_regression(sm, gn, "Number of summits", "Graph generation time (s)",
@@ -153,26 +179,38 @@ if __name__ == '__main__':
             stat_map.add_img(r)
             stat_map.add_txt(f"linear regression fx y ~ {round(b[0], 4)} + {round(b[1], 4)} * x")
 
+            # linear regression for number of summit over Pathfinding time with a*.
+            b, r = Stats.linear_regression(with_astar['smt'], with_astar['pfas'], "Number of summits", "Pathfinding time with A* (s)",
+                                           "Graph representing a linear regression of \nnumber of summit over Pathfinding time with A*.",
+                                           True)
+            print(f"linear regression fx y ~ {round(b[0], 4)} + {round(b[1], 4)} * x")
+            stat_map.add_img(r)
+            stat_map.add_txt(f"linear regression fx y ~ {round(b[0], 4)} + {round(b[1], 4)} * x")
+
             # plotting pathfinding Dijkstra
             r = Stats.stats_pathfinding(sm=sm, ng=ng, ptg=ptg_dj,
                                     title='Graph representing a progression of \nnumber of summit over Dijkstra pathfinding', save=True)
             stat_map.add_img(r)
 
             # plotting pathfinding A star
-            r = Stats.stats_pathfinding(sm=sm_astar, ng=ng_astar, ptg=ptg_astar,
+            r = Stats.stats_pathfinding(sm=with_astar['smt'], ng=with_astar['nei'], ptg=with_astar['pfas'],
                                     title='Graph representing a progression of \nnumber of summit over A star pathfinding', save=True)
             stat_map.add_img(r)
 
             # Plotting of the dj fix summits
             r = Stats.stat_dj_fix_summits(True)
             stat_map.add_img(r)
-            stat_map.add_txt(f"We had a graph with a defined number of summits (500) and we can see that" + '\n' + f"when we add neighbors (even a small amount), the execution time grows instantly.")
+            stat_map.add_txt("We had a graph with a defined number of summits (500) and we can see that")
+            stat_map.add_txt("when we add neighbors (even a small amount), the execution time grows instantly.")
 
             # Plotting of the dj fix neighbors
             r = Stats.stat_dj_fix_neighbors(True)
             stat_map.add_img(r)
-            stat_map.add_txt(f"We had a graph with a defined number of neighbors (3) and we can see that when we add summits the execution time grows but we need a large amount of summits to influence the execution time ")
+            stat_map.add_txt("We had a graph with a defined number of neighbors (3) and we can see that when we ")
+            stat_map.add_txt("add summits the execution time grows but we need a large amount of summits to")
+            stat_map.add_txt("influence the execution time ")
 
-            stat_map.add_txt(f"The conclusion we can make is that the number of neighbors influences more the execution time of the algorithm than the number of summits")
+            stat_map.add_txt("The conclusion we can make is that the number of neighbors influences more the")
+            stat_map.add_txt("execution time of the algorithm than the number of summits")
             # Save the PDF file
             stat_map.save()

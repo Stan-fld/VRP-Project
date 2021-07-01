@@ -14,6 +14,10 @@ class StatMap:
         self.file_name = file_name
         self.canvas = canvas.Canvas(f"{self.file_name}.pdf")
 
+    def next_page(self):
+        self.canvas.showPage()
+        self.offset = 800
+
     def has_enough_room(self, height):
         return self.offset - height > 0
 

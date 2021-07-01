@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas
 from matplotlib import pyplot
+from database import DBManagement
 
 
 def display_graph(plt: pyplot, save=False):
@@ -17,9 +18,6 @@ def display_graph(plt: pyplot, save=False):
         # function to show plot
         plt.show()
         return None
-
-
-from database import DBManagement
 
 
 def estimate_coef(x, y):
@@ -65,6 +63,18 @@ def linear_regression(x, y, x_name, y_name, title, save=False) -> [int]:
     b = estimate_coef(x, y)
     r = plot_regression_line(x, y, b, x_name, y_name, title, save)
     return b, r
+
+
+def classic_lines_graph(x, y, x_name, y_name, line_name, title, save=False):
+    for i in range(len(x)):
+        plt.plot(x[i], y[i], label = line_name[i])
+    # putting labels
+    plt.xlabel(x_name)
+    plt.ylabel(y_name)
+    plt.title(title)
+    # show a legend on the plot
+    plt.legend()
+    return display_graph(plt, save)
 
 
 def stat_dj_fix_summits(save=False):
