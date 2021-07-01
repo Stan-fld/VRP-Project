@@ -8,7 +8,8 @@ import numpy as np
 from database import DBManagement as dbm
 from generation.DataGeneration import DataGeneration
 from pathfinding.PathFinding import average_weight
-from pdf.RoadMap import RoadMap
+from pdf.RoadMap import RoadMap, remove_img
+from pdf.StatMap import StatMap
 from statistic import Stats
 
 def clearConsole(): os.system('cls' if os.name in ('nt', 'dos') else 'clear')
@@ -106,6 +107,7 @@ if __name__ == '__main__':
                     vehicles += 1
                 summits += step
         elif inp == "5":
+            stat_map = StatMap('statstest')
             # fig = plt.figure()
             # ax = plt.axes(projection='3d')
             # ax.scatter3D(x, y, z, c=z, cmap='BrBG_r')
@@ -123,15 +125,22 @@ if __name__ == '__main__':
                 ptg_dj.append(x['pathfinding_dj'])
                 avg_w_dj.append(x['average_weight_dj'])
 
-            x = np.array(gn)
-            y = np.array(sm)
+            # linear regression for number of summit over graph generation time
+            b, r = Stats.linear_regression(sm, gn, "Number of summits", "Graph generation time (s)", "Graph representing a linear regression of \nnumber of summit over graph generation time.", True)
+            stat_map.add_img(r)
+            print(f"linear regression fx y ~ {round(b[0], 4)} + {round(b[1], 4)} * x")
+            stat_map.add_txt(f"linear regression fx y ~ {round(b[0], 4)} + {round(b[1], 4)} * x")
 
-            # estimating coefficients
-            b = Stats.estimate_coef(x, y)
-            print("Estimated coefficients:\nb_0 = {} \nb_1 = {}".format(b[0], b[1]))
+            # linear regression for number of summit over Pathfinding time with Djikstra.
+            b, r = Stats.linear_regression(sm, ptg_dj, "Number of summits", "Pathfinding time with Djikstra (s)", "Graph representing a linear regression of \nnumber of summit over Pathfinding time with Djikstra.", True)
+            print(f"linear regression fx y ~ {round(b[0], 4)} + {round(b[1], 4)} * x")
+            stat_map.add_img(r)
+            stat_map.add_txt(f"linear regression fx y ~ {round(b[0], 4)} + {round(b[1], 4)} * x")
 
-            # plotting regression line
-            Stats.plot_regression_line(x, y, b)
+            # Save the PDF file
+            stat_map.save()
+
+
 
             # plotting average pathfinding dj
             Stats.stats_pathfinding_dj(sm=sm, ng=ng, ptg_dj=ptg_dj)

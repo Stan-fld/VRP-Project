@@ -1,6 +1,22 @@
+import uuid
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas
+from matplotlib import pyplot
+
+
+def display_graph(plt: pyplot, save = False):
+    if save:
+        # Save graph to file
+        fn = str(uuid.uuid4())[:6]
+        plt.savefig(f'{fn}.jpg', format='jpg')
+        plt.close()
+        return fn
+    else:
+        # function to show plot
+        plt.show()
+        return None
 
 from database import DBManagement
 from database.DBManagement import db
@@ -22,10 +38,10 @@ def estimate_coef(x, y):
     b_1 = SS_xy / SS_xx
     b_0 = m_y - b_1 * m_x
 
-    return (b_0, b_1)
+    return b_0, b_1
 
 
-def plot_regression_line(x, y, b):
+def plot_regression_line(x, y, b, x_name, y_name, title, save):
     # plotting the actual points as scatter plot
     plt.scatter(x, y, color="m",
                 marker="o", s=30)
@@ -37,11 +53,18 @@ def plot_regression_line(x, y, b):
     plt.plot(x, y_pred, color="g")
 
     # putting labels
-    plt.xlabel('x')
-    plt.ylabel('y')
+    plt.xlabel(x_name)
+    plt.ylabel(y_name)
+    plt.title(title)
+    display_graph(plt)
 
-    # function to show plot
-    plt.show()
+
+def linear_regression(x, y, x_name, y_name, title, save=False) -> [int]:
+    x = np.array(x)
+    y = np.array(y)
+    b = estimate_coef(x, y)
+    r = plot_regression_line(x, y, b, x_name, y_name, title, save)
+    return b, r
 
 
 def stat_dj_fix_summits():
