@@ -1,5 +1,6 @@
 import numpy as np
 from bson import json_util
+
 from database import DBConnection as db
 from generation.DataGeneration import DataGeneration
 from generation.Segment import Segment
@@ -22,16 +23,15 @@ def store_data(data: DataGeneration):
 
 
 def get_stat_from_mongo():
-    # print(db.stat_colletion.count())
-    return db.stat_colletion.find()
+    return db.stat_collection.find()
 
 
 def get_number_of_stored_stat():
-    return db.stat_colletion.count()
+    return db.stat_collection.count()
 
 
 def store_stat_to_mongo(stat):
-    db.stat_colletion.insert_one(stat)
+    db.stat_collection.insert_one(stat)
 
 
 def get_data_generation() -> DataGeneration:

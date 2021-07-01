@@ -4,12 +4,12 @@ import time
 from time import sleep
 
 import numpy as np
-from matplotlib import pyplot as plt
 
 from database import DBManagement as dbm
 from generation.DataGeneration import DataGeneration
 from pathfinding.PathFinding import average_weight
 from pdf.RoadMap import RoadMap
+from statistic import Stats
 
 
 def clearConsole(): os.system('cls' if os.name in ('nt', 'dos') else 'clear')
@@ -70,10 +70,11 @@ if __name__ == '__main__':
                 for y in range(20):
                     neighbors = 3
                     for z in range(10):
-                        print((z+20*y+i*10) / 2000)
+                        print((z + 20 * y + i * 10) / 2000)
                         bdd_entry = {"summits": summits, "vehicles": vehicles, "neighbors": neighbors}
                         start = time.time()
-                        data = DataGeneration(number_of_summit=summits, number_of_vehicle=vehicles, max_neighbor=neighbors,
+                        data = DataGeneration(number_of_summit=summits, number_of_vehicle=vehicles,
+                                              max_neighbor=neighbors,
                                               number_of_kind_of_item=4, progressbar=False)
                         end = time.time()
                         bdd_entry['generation'] = end - start
@@ -102,63 +103,38 @@ if __name__ == '__main__':
                         dbm.store_stat_to_mongo(json.loads(json.dumps(bdd_entry)))
                         # Store to file as backup if network link down
                         file_object = open('dump.json', 'a')
-                        file_object.write(",\n"+json.dumps(bdd_entry))
+                        file_object.write(",\n" + json.dumps(bdd_entry))
                         file_object.close()
                         neighbors += 1
                     vehicles += 1
                 summits += step
         elif inp == "5":
+            # fig = plt.figure()
+            # ax = plt.axes(projection='3d')
+            # ax.scatter3D(x, y, z, c=z, cmap='BrBG_r')
             stats = dbm.get_stat_from_mongo()
-            file_object = open('stat.dmp', 'a')
+
             sm = []
             gn = []
+            ng = []
+            ptg_dj = []
+            avg_w_dj = []
             for x in stats:
                 sm.append(x['summits'])
                 gn.append(x["generation"])
-
-
-            def estimate_coef(x, y):
-                # number of observations/points
-                n = np.size(x)
-
-                # mean of x and y vector
-                m_x = np.mean(x)
-                m_y = np.mean(y)
-
-                # calculating cross-deviation and deviation about x
-                SS_xy = np.sum(y*x) - n*m_y*m_x
-                SS_xx = np.sum(x*x) - n*m_x*m_x
-
-                # calculating regression coefficients
-                b_1 = SS_xy / SS_xx
-                b_0 = m_y - b_1*m_x
-
-                return (b_0, b_1)
-
-            def plot_regression_line(x, y, b):
-                # plotting the actual points as scatter plot
-                plt.scatter(x, y, color = "m",
-                            marker = "o", s = 30)
-
-                # predicted response vector
-                y_pred = b[0] + b[1]*x
-
-                # plotting the regression line
-                plt.plot(x, y_pred, color = "g")
-
-                # putting labels
-                plt.xlabel('x')
-                plt.ylabel('y')
-
-                # function to show plot
-                plt.show()
-
+                ng.append(x['neighbors'])
+                ptg_dj.append(x['pathfinding_dj'])
+                avg_w_dj.append(x['average_weight_dj'])
 
             x = np.array(gn)
             y = np.array(sm)
 
             # estimating coefficients
-            b = estimate_coef(x, y)
+            b = Stats.estimate_coef(x, y)
             print("Estimated coefficients:\nb_0 = {} \nb_1 = {}".format(b[0], b[1]))
+
             # plotting regression line
-            plot_regression_line(x, y, b)
+            Stats.plot_regression_line(x, y, b)
+
+            # plotting average pathfinding dj
+            Stats.stats_pathfinding_dj(sm=sm, ng=ng, ptg_dj=ptg_dj)
