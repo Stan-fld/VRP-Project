@@ -2,6 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas
 
+from database import DBManagement
+from database.DBManagement import db
+
 
 def estimate_coef(x, y):
     # number of observations/points
@@ -38,6 +41,47 @@ def plot_regression_line(x, y, b):
     plt.ylabel('y')
 
     # function to show plot
+    plt.show()
+
+
+def stat_dj_fix_summits():
+    stats = DBManagement.get_stat_from_mongo_sort_by_summits()
+    file_object = open('stat.dmp', 'a')
+    time_dj = []
+    number_neighbors = []
+    for x in stats:
+      if x['summits'] == 500:
+        time_dj.append(x["pathfinding_dj"])
+        number_neighbors.append(x["neighbors"])
+
+    plt.xlabel('Number of neighbors')
+    plt.ylabel('Execution Time of Djikstra Algorithm')
+
+    x = np.array(number_neighbors)
+    y = np.array(time_dj)
+
+    plt.scatter(x, y, color="m", marker="o", s=30)
+    plt.show()
+
+
+def stat_dj_fix_neighbors():
+    stats = DBManagement.get_stat_from_mongo_sort_by_neighbors()
+    file_object = open('stat.dmp', 'a')
+    time_dj = []
+    number_summits = []
+
+    for x in stats:
+        if x['neighbors'] == 3:
+            time_dj.append(x["pathfinding_dj"])
+            number_summits.append(x["summits"])
+
+    plt.xlabel('Number of summits')
+    plt.ylabel('Execution Time of Djikstra Algorithm')
+
+    x = np.array(number_summits)
+    y = np.array(time_dj)
+
+    plt.scatter(x, y, color="m", marker="o", s=30)
     plt.show()
 
 

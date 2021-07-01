@@ -10,7 +10,7 @@ from generation.Vehicle import Vehicle
 name = 'data_project'
 
 
-def store_data(data: DataGeneration):
+def store_data_generation(data: DataGeneration):
     # Delete data from Gridfs collections
     for collection in db.fs_collections:
         collection.delete_many({})
@@ -24,6 +24,16 @@ def store_data(data: DataGeneration):
 
 def get_stat_from_mongo():
     return db.stat_collection.find()
+
+
+# get data from mongo and sorting them by numbers of neighbors
+def get_stat_from_mongo_sort_by_neighbors():
+    return db.stat_collection.find().sort('neighbors')
+
+
+# get data from mongo and sorting them by numbers of summits
+def get_stat_from_mongo_sort_by_summits():
+    return db.stat_collection.find().sort('summits')
 
 
 def get_number_of_stored_stat():

@@ -135,3 +135,9 @@ if __name__ == '__main__':
 
             # plotting average pathfinding dj
             Stats.stats_pathfinding_dj(sm=sm, ng=ng, ptg_dj=ptg_dj)
+
+            # Plotting of the dj fix summits
+            Stats.stat_dj_fix_summits()
+
+            # Plotting of the dj fix neighbors
+            #Stats.stat_dj_fix_neighbors()
