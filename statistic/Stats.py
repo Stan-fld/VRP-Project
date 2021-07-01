@@ -67,7 +67,7 @@ def linear_regression(x, y, x_name, y_name, title, save=False) -> [int]:
     return b, r
 
 
-def stat_dj_fix_summits():
+def stat_dj_fix_summits(save=False):
     stats = DBManagement.get_stat_from_mongo_sort_by_summits()
     time_dj = []
     number_neighbors = []
@@ -77,18 +77,17 @@ def stat_dj_fix_summits():
             number_neighbors.append(x["neighbors"])
 
     plt.xlabel('Number of neighbors')
-    plt.ylabel('Execution Time of Djikstra Algorithm')
-
+    plt.ylabel('Execution Time of Djikstra Algorithm (s)')
+    plt.title('Graph representing number of neighbors (with 500 summits) \nover execution Time of Djikstra Algorithm')
     x = np.array(number_neighbors)
     y = np.array(time_dj)
 
     plt.scatter(x, y, color="m", marker="o", s=30)
-    plt.show()
+    return display_graph(plt, save)
 
 
-def stat_dj_fix_neighbors():
+def stat_dj_fix_neighbors(save=False):
     stats = DBManagement.get_stat_from_mongo_sort_by_neighbors()
-    file_object = open('stat.dmp', 'a')
     time_dj = []
     number_summits = []
 
@@ -98,16 +97,16 @@ def stat_dj_fix_neighbors():
             number_summits.append(x["summits"])
 
     plt.xlabel('Number of summits')
-    plt.ylabel('Execution Time of Djikstra Algorithm')
+    plt.ylabel('Execution Time of Djikstra Algorithm (s)')
 
     x = np.array(number_summits)
     y = np.array(time_dj)
-
+    plt.title('Graph representing number of summits (with 3 neighbors) \nover execution Time of Djikstra Algorithm')
     plt.scatter(x, y, color="m", marker="o", s=30)
-    plt.show()
+    return display_graph(plt, save)
 
 
-def stats_pathfinding(sm, ng, ptg, title):
+def stats_pathfinding(sm, ng, ptg, title, save=False):
     d = {'neighbors': ng, 'pathfinding': ptg, 'summit': sm}
     df = pandas.DataFrame(data=d)
     neighbors_set = set(df['neighbors'])
@@ -130,5 +129,4 @@ def stats_pathfinding(sm, ng, ptg, title):
     # putting title
     plt.title(title)
 
-    plt.show()
-    plt.close()
+    return display_graph(plt, save)

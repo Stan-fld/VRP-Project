@@ -153,19 +153,23 @@ if __name__ == '__main__':
             stat_map.add_img(r)
             stat_map.add_txt(f"linear regression fx y ~ {round(b[0], 4)} + {round(b[1], 4)} * x")
 
-            # Save the PDF file
-            stat_map.save()
-
             # plotting pathfinding Dijkstra
-            Stats.stats_pathfinding(sm=sm, ng=ng, ptg=ptg_dj,
-                                    title='Graph representing a progression of \nnumber of summit over Dijkstra pathfinding')
+            r = Stats.stats_pathfinding(sm=sm, ng=ng, ptg=ptg_dj,
+                                    title='Graph representing a progression of \nnumber of summit over Dijkstra pathfinding', save=True)
+            stat_map.add_img(r)
 
             # plotting pathfinding A star
-            Stats.stats_pathfinding(sm=sm_astar, ng=ng_astar, ptg=ptg_astar,
-                                    title='Graph representing a progression of \nnumber of summit over A star pathfinding')
+            r = Stats.stats_pathfinding(sm=sm_astar, ng=ng_astar, ptg=ptg_astar,
+                                    title='Graph representing a progression of \nnumber of summit over A star pathfinding', save=True)
+            stat_map.add_img(r)
 
             # Plotting of the dj fix summits
-            Stats.stat_dj_fix_summits()
+            r = Stats.stat_dj_fix_summits(True)
+            stat_map.add_img(r)
 
             # Plotting of the dj fix neighbors
-            # Stats.stat_dj_fix_neighbors()
+            r = Stats.stat_dj_fix_neighbors(True)
+            stat_map.add_img(r)
+
+            # Save the PDF file
+            stat_map.save()
