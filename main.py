@@ -37,9 +37,24 @@ if __name__ == '__main__':
             quit(0)
         elif inp == "1":  # Generate + store
             data = DataGeneration(number_of_summit=500, number_of_vehicle=10, max_neighbor=5, number_of_kind_of_item=4)
+            '''
+            number_of_summit = int(input("Number of summit : "))
+            number_of_vehicle = int(input("Number of vehicles : "))
+            while number_of_vehicle > 0.2 * number_of_summit or number_of_vehicle < 4:
+                print('The number of vehicles must be less than the number of tops and more than 4')
+                number_of_vehicle = int(input("Number of vehicles : "))
+
+            max_neighbor = int(input("Maximum number of neighbours : "))
+            while max_neighbor > number_of_summit:
+                print('The number of neighbours must be less than the number of summits')
+                max_neighbor = int(input("Maximum number of neighbours : "))
+
+            data = DataGeneration(number_of_summit=number_of_summit, number_of_vehicle=number_of_vehicle,
+                                  max_neighbor=max_neighbor, number_of_kind_of_item=4)
+            '''
             clearConsole()
             print('The data is being stored, please be patient !')
-            dbm.store_data(data)
+            dbm.store_data_generation(data)
             # data.display()
         elif inp == "2":  # Load from DB
             print('Data recovery, please wait')
@@ -139,8 +154,7 @@ if __name__ == '__main__':
                 except Exception as e:
                     pass
 
-
-            #number of summit over Pathfinding time
+            # number of summit over Pathfinding time
             x = [[], []]
             y = [[], []]
             line_names = [[], []]
@@ -156,7 +170,7 @@ if __name__ == '__main__':
                 line_names[1] = "Pathfinding with A*"
 
             stat_map.add_txt("1. Execution time analysis")
-            r = Stats.classic_lines_graph(x,y,"Number of summits", "Pathfinding time (in s)", line_names,
+            r = Stats.classic_lines_graph(x, y, "Number of summits", "Pathfinding time (in s)", line_names,
                                           "Graph representing number of summit over Pathfinding time.",
                                           True)
             stat_map.add_img(r)
@@ -181,7 +195,8 @@ if __name__ == '__main__':
             stat_map.add_txt(f"linear regression fx y ~ {round(b[0], 4)} + {round(b[1], 4)} * x")
 
             # linear regression for number of summit over Pathfinding time with a*.
-            b, r = Stats.linear_regression(with_astar['smt'], with_astar['pfas'], "Number of summits", "Pathfinding time with A* (s)",
+            b, r = Stats.linear_regression(with_astar['smt'], with_astar['pfas'], "Number of summits",
+                                           "Pathfinding time with A* (s)",
                                            "Graph representing a linear regression of \nnumber of summit over Pathfinding time with A*.",
                                            True)
             print(f"linear regression fx y ~ {round(b[0], 4)} + {round(b[1], 4)} * x")
@@ -190,12 +205,14 @@ if __name__ == '__main__':
 
             # plotting pathfinding Dijkstra
             r = Stats.stats_pathfinding(sm=sm, ng=ng, ptg=ptg_dj,
-                                    title='Graph representing a progression of \nnumber of summit over Dijkstra pathfinding', save=True)
+                                        title='Graph representing a progression of \nnumber of summit over Dijkstra pathfinding',
+                                        save=True)
             stat_map.add_img(r)
 
             # plotting pathfinding A star
             r = Stats.stats_pathfinding(sm=with_astar['smt'], ng=with_astar['nei'], ptg=with_astar['pfas'],
-                                    title='Graph representing a progression of \nnumber of summit over A star pathfinding', save=True)
+                                        title='Graph representing a progression of \nnumber of summit over A star pathfinding',
+                                        save=True)
             stat_map.add_img(r)
             stat_map.next_page()
             stat_map.add_txt("2. Influence of neighbors and summits")
