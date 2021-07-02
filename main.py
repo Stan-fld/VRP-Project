@@ -155,6 +155,7 @@ if __name__ == '__main__':
                 y[1].append(f[i])
                 line_names[1] = "Pathfinding with A*"
 
+            stat_map.add_txt("1. Execution time analysis")
             r = Stats.classic_lines_graph(x,y,"Number of summits", "Pathfinding time (in s)", line_names,
                                           "Graph representing number of summit over Pathfinding time.",
                                           True)
@@ -196,7 +197,8 @@ if __name__ == '__main__':
             r = Stats.stats_pathfinding(sm=with_astar['smt'], ng=with_astar['nei'], ptg=with_astar['pfas'],
                                     title='Graph representing a progression of \nnumber of summit over A star pathfinding', save=True)
             stat_map.add_img(r)
-
+            stat_map.next_page()
+            stat_map.add_txt("2. Influence of neighbors and summits")
             # Plotting of the dj fix summits
             r = Stats.stat_dj_fix_summits(True)
             stat_map.add_img(r)
@@ -209,7 +211,7 @@ if __name__ == '__main__':
             stat_map.add_txt("We had a graph with a defined number of neighbors (3) and we can see that when we ")
             stat_map.add_txt("add summits the execution time grows but we need a large amount of summits to")
             stat_map.add_txt("influence the execution time ")
-
+            stat_map.add_txt(" ")
             stat_map.add_txt("The conclusion we can make is that the number of neighbors influences more the")
             stat_map.add_txt("execution time of the algorithm than the number of summits")
             # Save the PDF file
