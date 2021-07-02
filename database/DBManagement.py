@@ -1,3 +1,5 @@
+from time import sleep
+
 import numpy as np
 from bson import json_util
 
@@ -72,4 +74,6 @@ def get_data_generation() -> DataGeneration:
             data.data_summit = [Summit(id=x['id']) for x in v]
         else:
             print('Error in data transformation')
+    for i in data.warehouse:
+        data.data_summit[i].set_warehouse()
     return data
